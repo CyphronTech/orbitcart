@@ -1,0 +1,67 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function hasRequiredSubmissionFields() {
+      return request.resource.data.keys().hasAll([
+        'name',
+        'email',
+        'project',
+        'brief',
+        'page',
+        'source',
+        'status',
+        'createdAt'
+      ]);
+    }
+
+    function hasOnlySubmissionFields() {
+      return request.resource.data.keys().hasOnly([
+        'name',
+        'email',
+        'project',
+        'brief',
+        'page',
+        'source',
+        'status',
+        'createdAt'
+      ]);
+    }
+
+    function validText(field, maxLength) {
+      return request.resource.data[field] is string
+        && request.resource.data[field].size() > 0
+        && request.resource.data[field].size() <= maxLength;
+    }
+
+    function validSubmission() {
+      return hasRequiredSubmissionFields()
+        && hasOnlySubmissionFields()
+        && validText('name', 80)
+        && validText('email', 120)
+        && request.resource.data.email.matches('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$')
+        && validText('project', 80)
+        && request.resource.data.project in [
+          'Website or SaaS platform',
+          'Mobile app',
+          'Automation workflow',
+          'AI feature or workflow',
+          'UI/UX design'
+        ]
+        && validText('brief', 2000)
+        && validText('page', 300)
+        && request.resource.data.source == 'website-contact-form'
+        && request.resource.data.status == 'new'
+        && request.resource.data.createdAt == request.time;
+    }
+
+    match /contactSubmissions/{submissionId} {
+      allow create: if validSubmission();
+      allow read, update, delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
