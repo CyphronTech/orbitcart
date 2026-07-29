@@ -2,7 +2,7 @@
 
 Marketing website for **CyphronTech**, a software development agency offering web platforms, mobile apps, AI automation, cloud engineering, and UI/UX design.
 
-The site is a **build-free, static React 18 single-page application**. There is no bundler, transpiler, or `node_modules` — React and Firebase are loaded directly in the browser as ES modules from CDNs. It can be served by any static host; hosting configs for **Firebase Hosting** and **Vercel** are included.
+The site is a **build-free, static React 18 single-page application**. There is no bundler, transpiler, or `node_modules` — React and Firebase are loaded directly in the browser as ES modules from CDNs. It's hosted on **Firebase Hosting**.
 
 ---
 
@@ -12,7 +12,7 @@ The site is a **build-free, static React 18 single-page application**. There is 
 - **Vanilla CSS** (`styles.css`) — no framework
 - **Cloud Firestore** (Firebase Web SDK 12.7.0, lazy-loaded) for contact form submissions
 - **Firebase App Check** with reCAPTCHA v3 for abuse protection
-- **Firebase Hosting** / **Vercel** for deployment (SPA rewrites to `index.html`)
+- **Firebase Hosting** for deployment (SPA rewrites to `index.html`)
 
 No package manager or build step is required.
 
@@ -43,8 +43,7 @@ No package manager or build step is required.
 │
 ├── firebase.json               # Firebase Hosting config (CSP, security headers, rewrites)
 ├── firestore.rules             # Firestore security rules (create-only contact writes)
-├── .firebaserc                 # Firebase project alias (cyphrontech-97daa)
-├── vercel.json                 # Vercel SPA rewrite config
+├── .firebaserc                 # Firebase project alias (cyphrontech-app-v2)
 └── FIREBASE_SETUP.md           # Detailed contact-form / Firebase setup guide
 ```
 
