@@ -2,44 +2,49 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    function hasRequiredSubmissionFields() {
-      return request.resource.data.keys().hasAll([
-        'name',
-        'email',
-        'project',
-        'brief',
-        'page',
-        'source',
-        'status',
-        'createdAt'
-      ]);
-    }
-
-    function hasOnlySubmissionFields() {
-      return request.resource.data.keys().hasOnly([
-        'name',
-        'email',
-        'project',
-        'brief',
-        'page',
-        'source',
-        'status',
-        'createdAt'
-      ]);
-    }
-
     function validText(field, maxLength) {
       return request.resource.data[field] is string
         && request.resource.data[field].size() > 0
         && request.resource.data[field].size() <= maxLength;
     }
 
-    function validSubmission() {
-      return hasRequiredSubmissionFields()
-        && hasOnlySubmissionFields()
+    // Optional text: may be empty, must still be a bounded string.
+    function validOptionalText(field, maxLength) {
+      return request.resource.data[field] is string
+        && request.resource.data[field].size() <= maxLength;
+    }
+
+    function validEmail() {
+      return validText('email', 120)
+        && request.resource.data.email.matches('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$');
+    }
+
+    // Contact form. Only what is needed to reply, plus proof of consent.
+    function validContactSubmission() {
+      return request.resource.data.keys().hasOnly([
+          'name',
+          'email',
+          'project',
+          'brief',
+          'consent',
+          'consentVersion',
+          'source',
+          'status',
+          'createdAt'
+        ])
+        && request.resource.data.keys().hasAll([
+          'name',
+          'email',
+          'project',
+          'brief',
+          'consent',
+          'consentVersion',
+          'source',
+          'status',
+          'createdAt'
+        ])
         && validText('name', 80)
-        && validText('email', 120)
-        && request.resource.data.email.matches('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$')
+        && validEmail()
         && validText('project', 80)
         && request.resource.data.project in [
           'Website or SaaS platform',
@@ -49,14 +54,55 @@ service cloud.firestore {
           'UI/UX design'
         ]
         && validText('brief', 2000)
-        && validText('page', 300)
+        && request.resource.data.consent == true
+        && validText('consentVersion', 20)
         && request.resource.data.source == 'website-contact-form'
         && request.resource.data.status == 'new'
         && request.resource.data.createdAt == request.time;
     }
 
+    // Privacy / data-deletion requests.
+    function validPrivacyRequest() {
+      return request.resource.data.keys().hasOnly([
+          'name',
+          'email',
+          'requestType',
+          'details',
+          'source',
+          'status',
+          'createdAt'
+        ])
+        && request.resource.data.keys().hasAll([
+          'name',
+          'email',
+          'requestType',
+          'details',
+          'source',
+          'status',
+          'createdAt'
+        ])
+        && validText('name', 80)
+        && validEmail()
+        && request.resource.data.requestType in [
+          'Get a copy of my data',
+          'Correct my data',
+          'Delete my data',
+          'Withdraw my consent',
+          'Complaint or other privacy question'
+        ]
+        && validOptionalText('details', 2000)
+        && request.resource.data.source == 'privacy-request-form'
+        && request.resource.data.status == 'new'
+        && request.resource.data.createdAt == request.time;
+    }
+
     match /contactSubmissions/{submissionId} {
-      allow create: if validSubmission();
+      allow create: if validContactSubmission();
+      allow read, update, delete: if false;
+    }
+
+    match /privacyRequests/{requestId} {
+      allow create: if validPrivacyRequest();
       allow read, update, delete: if false;
     }
 

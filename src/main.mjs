@@ -1,10 +1,17 @@
-import React, { useEffect, useMemo, useState } from "https://esm.sh/react@18.3.1";
-import { createRoot } from "https://esm.sh/react-dom@18.3.1/client";
+import React, { useEffect, useMemo, useRef, useState, createRoot } from "../assets/vendor/react-bundle.mjs?v=react-18.3.1";
 import "../assets/firebase-config.js?v=appcheck-v3";
+import { SITE, PRIVACY_REQUEST_TYPES } from "./site-config.mjs?v=small-1";
+import { CONSENT_OPEN_EVENT, openConsentSettings, readConsent, saveConsent, subscribeConsent } from "./consent.mjs?v=small-1";
+import { legalByFile, legalLinks } from "./legal.mjs?v=small-1";
 
 const h = React.createElement;
-const SITE_EMAIL = "cyphrontechllp@gmail.com";
+const SITE_EMAIL = SITE.email;
+const SITE_PHONE = SITE.phone;
+const SITE_PHONE_DISPLAY = SITE.phoneDisplay;
+const LINKEDIN_URL = SITE.linkedin;
+const LINKEDIN_DISPLAY = SITE.linkedinDisplay;
 const FIREBASE_SDK_VERSION = "12.7.0";
+const PRIVACY_COLLECTION = "privacyRequests";
 const CONTACT_PROJECT_OPTIONS = [
   "Website or SaaS platform",
   "Mobile app",
@@ -14,6 +21,74 @@ const CONTACT_PROJECT_OPTIONS = [
 ];
 let contactServicePromise;
 
+const IMAGE_SIZES = {
+  "assets/case-finsight.webp": [
+    1100,
+    825
+  ],
+  "assets/case-flowdesk.webp": [
+    1100,
+    825
+  ],
+  "assets/case-leaselens.webp": [
+    1100,
+    825
+  ],
+  "assets/case-medsync.webp": [
+    1100,
+    825
+  ],
+  "assets/case-orbitcart.webp": [
+    1100,
+    825
+  ],
+  "assets/digital-mockup.webp": [
+    590,
+    220
+  ],
+  "assets/hero-background.webp": [
+    1672,
+    941
+  ],
+  "assets/hero-laptop.webp": [
+    380,
+    520
+  ],
+  "assets/service-cloud-engineering.webp": [
+    960,
+    720
+  ],
+  "assets/service-data-products.webp": [
+    960,
+    720
+  ],
+  "assets/service-mobile-apps.webp": [
+    960,
+    720
+  ],
+  "assets/service-web-platforms.webp": [
+    960,
+    720
+  ],
+  "assets/service-workflow-automation.webp": [
+    960,
+    720
+  ],
+  "assets/visual-language.webp": [
+    330,
+    190
+  ],
+  "assets/logo-mark-small.png": [
+    156,
+    133
+  ]
+};
+
+const imageProps = (src) => {
+  const size = IMAGE_SIZES[src];
+  return size ? { width: size[0], height: size[1] } : {};
+};
+
 const cx = (...values) => values.filter(Boolean).join(" ");
 
 const services = [
@@ -21,7 +96,7 @@ const services = [
     slug: "web",
     file: "web-development.html",
     title: "Web Platforms",
-    image: "assets/service-web-platforms.jpg",
+    image: "assets/service-web-platforms.webp",
     alt: "Professional web platform dashboard on a desktop monitor",
     summary: "Fast, accessible websites and SaaS portals with resilient front-end architecture and clean content workflows.",
     eyebrow: "Web development",
@@ -53,7 +128,7 @@ const services = [
     slug: "mobile",
     file: "mobile-app-development.html",
     title: "Mobile Apps",
-    image: "assets/service-mobile-apps.jpg",
+    image: "assets/service-mobile-apps.webp",
     alt: "Modern mobile app interfaces on smartphones",
     summary: "Native-feeling cross-platform applications with thoughtful user flows, API integration, and launch-ready QA.",
     eyebrow: "Mobile app development",
@@ -85,7 +160,7 @@ const services = [
     slug: "ai",
     file: "ai-automation.html",
     title: "Workflow Automation",
-    image: "assets/service-workflow-automation.jpg",
+    image: "assets/service-workflow-automation.webp",
     alt: "Workflow automation dashboard with connected process nodes",
     summary: "AI-assisted automation for CRM, finance, support, and internal teams using APIs, bots, and monitored jobs.",
     eyebrow: "AI automation",
@@ -117,7 +192,7 @@ const services = [
     slug: "cloud",
     file: "cloud-engineering.html",
     title: "Cloud Engineering",
-    image: "assets/service-cloud-engineering.jpg",
+    image: "assets/service-cloud-engineering.webp",
     alt: "Cloud engineering operations screens and infrastructure dashboards",
     summary: "Secure infrastructure, CI/CD pipelines, observability, and cost-aware deployment on modern cloud stacks.",
     eyebrow: "Cloud engineering",
@@ -149,7 +224,7 @@ const services = [
     slug: "ux",
     file: "ui-ux-design.html",
     title: "UI/UX Design",
-    image: "assets/digital-mockup.jpg",
+    image: "assets/digital-mockup.webp",
     alt: "Responsive product interface mockups for UI and UX design",
     summary: "User flows, wireframes, design systems, and polished product interfaces built for clear, intuitive experiences.",
     eyebrow: "UI/UX design",
@@ -177,35 +252,61 @@ const services = [
       ["Buildable", "Design decisions that translate cleanly into production UI."],
     ],
   },
+  {
+    slug: "data",
+    file: "data-products.html",
+    title: "Data Products",
+    image: "assets/service-data-products.webp",
+    alt: "Business intelligence dashboard on desktop and tablet screens",
+    summary: "Dashboards, reporting pipelines, and decision tools that turn fragmented business data into usable insight.",
+    eyebrow: "Data products",
+    detailTitle: "Data products that turn scattered numbers into decisions",
+    detailLead: "We build dashboards, reporting pipelines, and decision tools that bring fragmented business data together and make it usable for the people who run the business.",
+    cta: "Start a Data Project",
+    heroClass: "service-detail-hero--data",
+    introTitle: "Clear reporting your team can trust and act on.",
+    introText: "CyphronTech connects data sources, models the metrics that matter, and builds the dashboards and alerts that let leaders and operators see what is happening without chasing spreadsheets.",
+    builds: [
+      ["Dashboards and reporting", "Leadership and operations views with clear metric definitions, drilldowns, and shareable summaries."],
+      ["Data pipelines", "Ingestion from CRM, billing, product, and support systems into a clean, documented data layer."],
+      ["AI-assisted insight", "Plain-language summaries, anomaly alerts, and report drafting that stay reviewable by people."],
+    ],
+    focus: [
+      ["Metrics", "Agree what each number means, who owns it, and where it comes from before anything is built."],
+      ["Pipelines", "Reliable ingestion, transformation, and access control using tools such as Python, PostgreSQL, and BigQuery."],
+      ["Visualization", "Dashboards in Power BI or custom web views, designed for quick reading and confident decisions."],
+    ],
+    outcomeTitle: "Numbers everyone agrees on.",
+    outcomeText: "We document definitions, sources, and refresh schedules so your team can keep trusting the data after handover.",
+    outcomes: [
+      ["Consistent", "One set of metric definitions across teams."],
+      ["Timely", "Refresh schedules and alerts matched to how you make decisions."],
+      ["Governed", "Permissions and audit-friendly access to the data."],
+    ],
+  },
 ];
-
-const extraServiceCard = {
-  title: "Data Products",
-  image: "assets/service-data-products.jpg",
-  alt: "Business intelligence dashboard on desktop and tablet screens",
-  summary: "Dashboards, reporting pipelines, and decision tools that turn fragmented business data into usable insight.",
-};
 
 const caseStudies = [
   {
     slug: "orbitcart",
     file: "case-orbitcart.html",
     title: "OrbitCart: AI Commerce Operations",
-    image: "assets/case-orbitcart.jpg",
+    image: "assets/case-orbitcart.webp",
     alt: "OrbitCart commerce operations mobile app mockup",
-    teaser: "OrbitCart is a wholesale commerce platform concept built around real-time inventory, supplier messaging, and AI reorder recommendations. The dashboard gives sales and warehouse teams a shared view of stock, order health, and fulfillment priorities.",
-    metrics: [["Users", "18k+"], ["Country", "USA"], ["Platform", "iOS"]],
-    detailLead: "A wholesale commerce operations concept that brings inventory, supplier conversations, fulfillment priorities, and AI reorder recommendations into one mobile-first workflow.",
-    stats: [["Users", "18k+"], ["Country", "USA"], ["Platform", "iOS"], ["AI Layer", "Reorders"]],
+    teaser: "OrbitCart is a wholesale commerce platform built around real-time inventory, supplier messaging, and AI reorder recommendations. The dashboard gives sales and warehouse teams a shared view of stock, order health, and fulfillment priorities.",
+    isBuild: true,
+    metrics: [["Status", "Working build"], ["Platform", "iOS"], ["AI layer", "Reorders"]],
+    detailLead: "A wholesale commerce operations product that brings inventory, supplier conversations, fulfillment priorities, and AI reorder recommendations into one mobile-first workflow.",
+    stats: [["Status", "Working build"], ["Platform", "iOS"], ["AI Layer", "Reorders"], ["Focus", "Commerce"]],
     overviewTitle: "Shared commerce visibility for sales and warehouse teams.",
     overviewText: [
-      "OrbitCart was shaped around the daily tension between stock availability, supplier updates, and fulfillment decisions. The product concept gives teams a single operating surface for order health, inventory movement, and next-best reorder actions.",
+      "OrbitCart was shaped around the daily tension between stock availability, supplier updates, and fulfillment decisions. The product gives teams a single operating surface for order health, inventory movement, and next-best reorder actions.",
       "The AI layer is practical: it helps surface reorder timing, supplier risk, and fulfillment priorities instead of acting as a generic chatbot.",
     ],
     focus: [
       ["Challenge", "Disconnected stock decisions", "Sales, warehouse, and supplier teams needed clearer visibility into order risk, stock movement, and communication history."],
       ["Solution", "AI commerce command layer", "The experience combines inventory views, supplier messaging, reorder signals, and fulfillment queues in a focused mobile workflow."],
-      ["Outcome", "Faster operational response", "Teams can review priority orders, understand reorder triggers, and coordinate supplier follow-up without jumping between systems."],
+      ["Intended outcome", "Faster operational response", "Teams can review priority orders, understand reorder triggers, and coordinate supplier follow-up without jumping between systems."],
     ],
     scopeTitle: "A mobile-first commerce workspace for teams that manage stock every day.",
     scope: [
@@ -232,12 +333,12 @@ const caseStudies = [
     slug: "leaselens",
     file: "case-leaselens.html",
     title: "LeaseLens: AI Property Scanner",
-    image: "assets/case-leaselens.jpg",
+    image: "assets/case-leaselens.webp",
     alt: "LeaseLens property inspection mobile app mockup",
     teaser: "LeaseLens is a property inspection app concept for landlords, tenants, and field teams. It uses guided capture, AI condition notes, and report workflows to make move-in and move-out documentation faster, more consistent, and easier to verify.",
-    metrics: [["Reports", "10k+"], ["Country", "UAE"], ["Platform", "Android"]],
+    metrics: [["Format", "Concept"], ["Platform", "Android"], ["AI layer", "Notes"]],
     detailLead: "A property inspection app concept for guided capture, AI condition notes, and cleaner move-in and move-out reporting for landlords, tenants, and field teams.",
-    stats: [["Reports", "10k+"], ["Country", "UAE"], ["Platform", "Android"], ["AI Layer", "Notes"]],
+    stats: [["Format", "Concept"], ["Platform", "Android"], ["AI Layer", "Notes"], ["Focus", "Inspections"]],
     overviewTitle: "Consistent inspection records without slowing field teams down.",
     overviewText: [
       "LeaseLens was designed to reduce the friction of property documentation by turning inspections into a guided mobile workflow. The experience supports room-by-room capture, issue tagging, photo review, and report generation.",
@@ -246,7 +347,7 @@ const caseStudies = [
     focus: [
       ["Challenge", "Inconsistent inspection evidence", "Field teams needed a repeatable way to collect photos, notes, timestamps, and condition details across many property types."],
       ["Solution", "Guided AI capture workflow", "The app concept combines structured inspection paths, AI condition summaries, report workflows, and review checkpoints."],
-      ["Outcome", "Cleaner handoff documentation", "Property teams get reports that are easier to verify, share, and compare across move-in and move-out events."],
+      ["Intended outcome", "Cleaner handoff documentation", "Property teams get reports that are easier to verify, share, and compare across move-in and move-out events."],
     ],
     scopeTitle: "Field inspection workflows designed for speed, evidence, and review.",
     scope: [
@@ -273,21 +374,22 @@ const caseStudies = [
     slug: "flowdesk",
     file: "case-flowdesk.html",
     title: "FlowDesk: AI Automation Command Center",
-    image: "assets/case-flowdesk.jpg",
+    image: "assets/case-flowdesk.webp",
     alt: "FlowDesk automation command center dashboard mockup",
     teaser: "FlowDesk centralizes client intake, approvals, support routing, and status reporting for service teams. The build connects CRM data, Slack alerts, AI triage, billing events, and executive dashboards into a single operations layer.",
-    metrics: [["Hours Saved", "4k+"], ["Region", "UK"], ["Platform", "Web"]],
-    detailLead: "A service operations concept that connects intake, approvals, support routing, billing events, AI triage, and executive reporting into one web command center.",
-    stats: [["Hours Saved", "4k+"], ["Region", "UK"], ["Platform", "Web"], ["AI Layer", "Triage"]],
+    isBuild: true,
+    metrics: [["Status", "Working build"], ["Platform", "Web"], ["AI layer", "Triage"]],
+    detailLead: "A service operations platform that connects intake, approvals, support routing, billing events, AI triage, and executive reporting into one web command center.",
+    stats: [["Status", "Working build"], ["Platform", "Web"], ["AI Layer", "Triage"], ["Focus", "Operations"]],
     overviewTitle: "A single operations layer for service teams.",
     overviewText: [
-      "FlowDesk was shaped around the reality that service businesses often run across CRM records, support tickets, approvals, billing tools, and chat alerts. The concept centralizes the operational queue and shows leadership where work is blocked.",
+      "FlowDesk was shaped around the reality that service businesses often run across CRM records, support tickets, approvals, billing tools, and chat alerts. The product centralizes the operational queue and shows leadership where work is blocked.",
       "The AI layer supports intake triage, summary drafting, priority signals, and routing suggestions while teams remain in control of approvals.",
     ],
     focus: [
       ["Challenge", "Fragmented work queues", "Teams needed to see intake, support, billing, and status reporting in one place instead of chasing updates across tools."],
-      ["Solution", "AI-assisted operations hub", "The concept brings routing, alerts, approvals, CRM context, dashboards, and AI triage into a single control surface."],
-      ["Outcome", "Less manual coordination", "Managers can spot bottlenecks faster, teams can act from one queue, and leadership gets clearer operational visibility."],
+      ["Solution", "AI-assisted operations hub", "The product brings routing, alerts, approvals, CRM context, dashboards, and AI triage into a single control surface."],
+      ["Intended outcome", "Less manual coordination", "Managers can spot bottlenecks faster, teams can act from one queue, and leadership gets clearer operational visibility."],
     ],
     scopeTitle: "An operations command center for intake, routing, and visibility.",
     scope: [
@@ -314,12 +416,12 @@ const caseStudies = [
     slug: "medsync",
     file: "case-medsync.html",
     title: "MedSync: AI Patient Engagement Portal",
-    image: "assets/case-medsync.jpg",
+    image: "assets/case-medsync.webp",
     alt: "MedSync patient engagement portal mockup across desktop and mobile",
     teaser: "MedSync is a clinic portal concept for appointments, digital intake, AI-assisted follow-up reminders, and care team messaging. It gives administrators a clear queue while giving patients a calm mobile-first experience.",
-    metrics: [["Clinics", "80+"], ["Country", "Canada"], ["Platform", "Web + iOS"]],
+    metrics: [["Format", "Concept"], ["Platform", "Web + iOS"], ["AI layer", "Reminders"]],
     detailLead: "A clinic portal concept for appointments, digital intake, AI-assisted reminders, follow-up workflows, and care team messaging across web and mobile touchpoints.",
-    stats: [["Clinics", "80+"], ["Country", "Canada"], ["Platform", "Web + iOS"], ["AI Layer", "Reminders"]],
+    stats: [["Format", "Concept"], ["Platform", "Web + iOS"], ["AI Layer", "Reminders"], ["Focus", "Healthcare admin"]],
     overviewTitle: "A calmer engagement workflow for clinics and patients.",
     overviewText: [
       "MedSync was designed to simplify the administrative load around appointments, intake, reminders, and care team communication. The concept gives clinic staff a clear operational queue while giving patients a mobile-first experience.",
@@ -328,7 +430,7 @@ const caseStudies = [
     focus: [
       ["Challenge", "High-friction patient coordination", "Clinics needed a clearer way to manage intake, appointments, reminders, and patient messaging without overwhelming staff."],
       ["Solution", "Unified portal and queue", "The concept combines patient-facing flows with admin queues, care messaging, digital forms, and AI-assisted follow-up prompts."],
-      ["Outcome", "Better continuity of care", "Patients get a calmer experience while clinic teams get stronger visibility into pending tasks and follow-up needs."],
+      ["Intended outcome", "Better continuity of care", "Patients get a calmer experience while clinic teams get stronger visibility into pending tasks and follow-up needs."],
     ],
     scopeTitle: "A patient engagement system that keeps clinical teams in control.",
     scope: [
@@ -355,12 +457,12 @@ const caseStudies = [
     slug: "finsight",
     file: "case-finsight.html",
     title: "FinSight: AI Cloud Analytics Dashboard",
-    image: "assets/case-finsight.jpg",
+    image: "assets/case-finsight.webp",
     alt: "FinSight cloud analytics dashboard mockup",
     teaser: "FinSight brings revenue, churn, pipeline, and support signals into one board for finance and leadership teams. The platform includes secure data ingestion, AI-assisted reports, and anomaly alerts for faster decisions.",
-    metrics: [["Revenue Tracked", "$12M"], ["Country", "Singapore"], ["Platform", "Web"]],
+    metrics: [["Format", "Concept"], ["Platform", "Web"], ["AI layer", "Alerts"]],
     detailLead: "A finance and leadership dashboard concept that brings revenue, churn, pipeline, support signals, secure data ingestion, and AI-assisted reporting into one board.",
-    stats: [["Revenue Tracked", "$12M"], ["Country", "Singapore"], ["Platform", "Web"], ["AI Layer", "Alerts"]],
+    stats: [["Format", "Concept"], ["Platform", "Web"], ["AI Layer", "Alerts"], ["Focus", "Analytics"]],
     overviewTitle: "Leadership analytics with signals teams can act on.",
     overviewText: [
       "FinSight was shaped for finance and leadership teams that need a single view across revenue, churn, sales pipeline, and support signals. The dashboard concept turns scattered metrics into a clearer decision workflow.",
@@ -369,7 +471,7 @@ const caseStudies = [
     focus: [
       ["Challenge", "Signals spread across teams", "Finance and leadership teams needed a clearer way to interpret revenue, churn, pipeline, and support health together."],
       ["Solution", "Secure analytics board", "The concept combines data ingestion, metric modeling, AI report drafting, anomaly alerts, and executive dashboard views."],
-      ["Outcome", "Faster decision cycles", "Leaders can review priority signals, understand trend movement, and move from dashboard review to action planning faster."],
+      ["Intended outcome", "Faster decision cycles", "Leaders can review priority signals, understand trend movement, and move from dashboard review to action planning faster."],
     ],
     scopeTitle: "A decision dashboard that turns scattered metrics into a leadership workflow.",
     scope: [
@@ -404,7 +506,7 @@ const techGroups = [
 ];
 
 const homeMeta = {
-  title: "CyphronTech | Software Development Agency",
+  title: "CyphronTech | Custom Software, Mobile Apps and AI Automation",
   description: "CyphronTech builds scalable websites, mobile apps, AI automation systems, and cloud platforms for growing companies.",
 };
 
@@ -414,13 +516,23 @@ const servicePageTitles = {
   ai: "AI Automation Services | CyphronTech",
   cloud: "Cloud Engineering | CyphronTech",
   ux: "UI/UX Design | CyphronTech",
+  data: "Data Products and Analytics | CyphronTech",
 };
 
 const serviceByFile = new Map(services.map((service) => [service.file, service]));
 const caseByFile = new Map(caseStudies.map((study) => [study.file, study]));
 
+// The build script (scripts/build.mjs) sets globalThis.__SSR_FILE__ to pre-render each page.
+function currentFile() {
+  if (typeof window === "undefined") {
+    return globalThis.__SSR_FILE__ || "index.html";
+  }
+
+  return window.location.pathname.split("/").filter(Boolean).pop() || "index.html";
+}
+
 function getRoute() {
-  const file = window.location.pathname.split("/").filter(Boolean).pop() || "index.html";
+  const file = currentFile();
 
   if (file === "index.html") {
     return { type: "home", meta: homeMeta };
@@ -434,6 +546,25 @@ function getRoute() {
       meta: {
         title: servicePageTitles[service.slug],
         description: service.detailLead,
+      },
+    };
+  }
+
+  if (legalByFile.has(file)) {
+    const page = legalByFile.get(file);
+    return {
+      type: "legal",
+      page,
+      meta: { title: `${page.title} | CyphronTech`, description: page.description },
+    };
+  }
+
+  if (file === "privacy-request.html") {
+    return {
+      type: "privacy-request",
+      meta: {
+        title: "Privacy and Data Requests | CyphronTech",
+        description: "Ask CyphronTech for a copy of your data, a correction, deletion, or to withdraw your consent.",
       },
     };
   }
@@ -495,7 +626,7 @@ function Brand({ footer = false }) {
       href: "index.html#top",
       "aria-label": "CyphronTech home",
     },
-    h("img", { src: "assets/logo-mark.png", alt: "", className: "brand__mark" }),
+    h("img", { src: "assets/logo-mark-small.png", alt: "", width: 39, height: 33, className: "brand__mark" }),
     h("span", { className: "brand__name" }, "Cyphron", h("span", null, "Tech")),
   );
 }
@@ -503,6 +634,7 @@ function Brand({ footer = false }) {
 function Header({ route }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const toggleRef = useRef(null);
   const onHome = route.type === "home";
   const linkPrefix = onHome ? "" : "index.html";
   const links = [
@@ -523,6 +655,22 @@ function Header({ route }) {
     return () => window.removeEventListener("scroll", updateHeader);
   }, []);
 
+  useEffect(() => {
+    if (!isOpen) {
+      return undefined;
+    }
+
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") {
+        setIsOpen(false);
+        toggleRef.current?.focus();
+      }
+    };
+
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [isOpen]);
+
   return h(
     "header",
     { className: cx("site-header", isScrolled && "is-scrolled"), "data-header": true },
@@ -534,6 +682,7 @@ function Header({ route }) {
         "button",
         {
           className: "nav-toggle",
+          ref: toggleRef,
           type: "button",
           "aria-expanded": String(isOpen),
           "aria-controls": "primary-menu",
@@ -541,7 +690,7 @@ function Header({ route }) {
           onClick: () => setIsOpen((value) => !value),
         },
         h("span", { className: "nav-toggle__icon", "aria-hidden": "true" }),
-        h("span", { className: "sr-only" }, "Open navigation"),
+        h("span", { className: "sr-only" }, isOpen ? "Close navigation" : "Open navigation"),
       ),
       h(
         "div",
@@ -552,14 +701,27 @@ function Header({ route }) {
   );
 }
 
-function Footer() {
-  return h(
-    "footer",
-    { className: "footer" },
-    h(Brand, { footer: true }),
-    h("p", null, "Building the future with code, AI automation, and innovation."),
-    h("a", { href: `mailto:${SITE_EMAIL}` }, SITE_EMAIL),
-  );
+const LINKEDIN_ICON_PATH = "M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z";
+
+const MAIL_ICON_PATH = "M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z";
+const PHONE_ICON_PATH = "M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.61 21 3 13.39 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1.02l-2.2 2.2z";
+
+function ContactIcon({ path }) {
+  return h("svg", { viewBox: "0 0 24 24", width: 20, height: 20, fill: "currentColor", "aria-hidden": "true", focusable: "false" }, h("path", { d: path }));
+}
+
+function ContactLinks() {
+  return [
+    h("a", { key: "email", className: "contact-link", href: `mailto:${SITE_EMAIL}` }, h(ContactIcon, { path: MAIL_ICON_PATH }), SITE_EMAIL),
+    h("a", { key: "phone", className: "contact-link", href: `tel:${SITE_PHONE}` }, h(ContactIcon, { path: PHONE_ICON_PATH }), SITE_PHONE_DISPLAY),
+    h(
+      "a",
+      { key: "linkedin", className: "contact-link", href: LINKEDIN_URL, target: "_blank", rel: "noopener noreferrer", title: "CyphronTech on LinkedIn" },
+      h(ContactIcon, { path: LINKEDIN_ICON_PATH }),
+      LINKEDIN_DISPLAY,
+      h(NewTabNote, null),
+    ),
+  ];
 }
 
 function HomePage() {
@@ -586,8 +748,8 @@ function HeroSection() {
     h(
       "div",
       { className: "hero__content" },
-      h("p", { className: "eyebrow" }, "Software development agency"),
-      h("h1", { id: "hero-title" }, "CyphronTech"),
+      h("p", { className: "eyebrow" }, "CyphronTech · Software development agency"),
+      h("h1", { id: "hero-title" }, "Custom software, mobile apps, and AI automation"),
       h("p", { className: "hero__lead" }, "We design and engineer secure web platforms, mobile apps, AI automation workflows, and cloud systems that help modern teams move faster."),
       h(
         "div",
@@ -597,8 +759,8 @@ function HeroSection() {
       ),
       h(
         "dl",
-        { className: "hero__stats", "aria-label": "Agency metrics" },
-        [["50+", "Projects shipped"], ["20+", "Active clients"], ["99%", "Delivery approval"]].map(([value, label]) =>
+        { className: "hero__stats", "aria-label": "Core services" },
+        [["Web", "Platforms and portals"], ["Mobile", "iOS and Android apps"], ["AI + Cloud", "Automation and infrastructure"]].map(([value, label]) =>
           h("div", { key: label }, h("dt", null, value), h("dd", null, label)),
         ),
       ),
@@ -633,14 +795,14 @@ function ServicesSection() {
     h(
       "div",
       { className: "services-grid" },
-      [...services, extraServiceCard].map((service) =>
+      services.map((service) =>
         h(
           "article",
           { className: "service-card", key: service.title },
-          h("img", { className: "service-card__image", src: service.image, alt: service.alt, loading: "lazy", decoding: "async" }),
+          h("img", { className: "service-card__image", src: service.image, alt: service.alt, loading: "lazy", decoding: "async", ...imageProps(service.image) }),
           h("h3", null, service.title),
           h("p", null, service.summary),
-          service.file ? h("a", { className: "service-card__link", href: service.file }, "Explore service") : null,
+          service.file ? h("a", { className: "service-card__link", href: service.file }, "Explore service", h("span", { className: "sr-only" }, `: ${service.title}`)) : null,
         ),
       ),
     ),
@@ -715,7 +877,7 @@ function AiApproachSection() {
 function CaseStudiesSection() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const reduceMotion = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   useEffect(() => {
     if (reduceMotion || isPaused || caseStudies.length < 2) {
@@ -742,11 +904,12 @@ function CaseStudiesSection() {
       h("div", { className: "case-studies__head" }, h("p", { className: "eyebrow" }, "Case studies"), h("h2", { id: "work-title" }, "AI-ready builds for modern digital teams")),
       h(
         "div",
-        { className: "carousel-controls", "aria-label": "Case study carousel controls" },
+        { className: "carousel-controls", role: "group", "aria-label": "Case study carousel controls" },
         h("button", { type: "button", className: "carousel-button", "aria-label": "Previous case study", "data-carousel-prev": true, onClick: () => goToSlide(currentSlide - 1) }, h("span", { className: "carousel-button__icon carousel-button__icon--prev", "aria-hidden": "true" })),
         h("button", { type: "button", className: "carousel-button", "aria-label": "Next case study", "data-carousel-next": true, onClick: () => goToSlide(currentSlide + 1) }, h("span", { className: "carousel-button__icon carousel-button__icon--next", "aria-hidden": "true" })),
       ),
     ),
+    h("p", { className: "case-studies__note" }, "OrbitCart and FlowDesk are working builds by CyphronTech that are not yet live. The other case studies are illustrative concepts. None of them show real-world usage or client results."),
     h(
       "div",
       { className: "case-carousel", "data-carousel": true },
@@ -757,7 +920,7 @@ function CaseStudiesSection() {
           const active = index === currentSlide;
           return h(
             "article",
-            { className: "case-card", key: study.slug, "aria-hidden": String(!active), "data-carousel-slide": true },
+            { className: "case-card", key: study.slug, "aria-hidden": String(!active), inert: active ? undefined : "", "data-carousel-slide": true },
             h(
               "div",
               { className: "case-card__copy" },
@@ -765,19 +928,19 @@ function CaseStudiesSection() {
               h("p", null, study.teaser),
               h(
                 "div",
-                { className: "case-metrics", "aria-label": `${study.title} project details` },
+                { className: "case-metrics", role: "group", "aria-label": `${study.title} project details` },
                 study.metrics.map(([label, value]) => h("span", { key: label }, h("strong", null, label), " ", value)),
               ),
-              h("a", { className: "case-cta", href: study.file, tabIndex: active ? undefined : -1 }, "View Case Study"),
+              h("a", { className: "case-cta", href: study.file, tabIndex: active ? undefined : -1 }, "View Case Study", h("span", { className: "sr-only" }, `: ${study.title}`)),
             ),
-            h("div", { className: "case-card__visual" }, h("img", { className: "case-card__mockup", src: study.image, alt: study.alt, loading: "lazy", decoding: "async" })),
+            h("div", { className: "case-card__visual" }, h("img", { className: "case-card__mockup", src: study.image, alt: study.alt, loading: "lazy", decoding: "async", ...imageProps(study.image) })),
           );
         }),
       ),
     ),
     h(
       "div",
-      { className: "carousel-dots", "aria-label": "Case study slides", "data-carousel-dots": true },
+      { className: "carousel-dots", role: "group", "aria-label": "Case study slides", "data-carousel-dots": true },
       caseStudies.map((study, index) =>
         h("button", {
           key: study.slug,
@@ -814,11 +977,12 @@ function TechStackSection() {
           h(
             "div",
             { className: "tech-tags" },
-            tags.map(([icon, label]) => h("div", { className: "tech-tag", key: label }, h("img", { src: `assets/tech-logos/${icon}`, alt: "", loading: "lazy", decoding: "async" }), h("span", null, label))),
+            tags.map(([icon, label]) => h("div", { className: "tech-tag", key: label }, h("img", { src: `assets/tech-logos/${icon}`, alt: "", width: 24, height: 24, loading: "lazy", decoding: "async" }), h("span", null, label))),
           ),
         ),
       ),
     ),
+    h("p", { className: "tech-note" }, "Product names and logos are trademarks of their respective owners. They are shown only to identify technologies we work with and do not imply endorsement."),
   );
 }
 
@@ -834,7 +998,7 @@ function ProcessSection() {
     { className: "section section--white", id: "process", "aria-labelledby": "process-title" },
     h("div", { className: "section__head" }, h("p", { className: "eyebrow" }, "Process"), h("h2", { id: "process-title" }, "A tighter path from idea to launch"), h("p", null, "Every engagement is structured around visible decisions, measurable delivery, practical AI opportunities, and code that can be owned by your team.")),
     h("div", { className: "timeline" }, steps.map(([className, title, text]) => h("article", { className: cx("timeline__card", className), key: title }, h("h3", null, title), h("p", null, text)))),
-    h("div", { className: "visual-language" }, h("img", { src: "assets/visual-language.jpg", alt: "Technical visual language showing architecture, code, and interface references", loading: "lazy", decoding: "async" }), h("p", null, "Clean, modern, technical, human. The brand system balances precision with trust so the site feels credible without becoming cold.")),
+    h("div", { className: "visual-language" }, h("img", { src: "assets/visual-language.webp", ...imageProps("assets/visual-language.webp"), alt: "Technical visual language showing architecture, code, and interface references", loading: "lazy", decoding: "async" }), h("p", null, "Clean, modern, technical, human. The brand system balances precision with trust so the site feels credible without becoming cold.")),
   );
 }
 
@@ -844,6 +1008,7 @@ function FaqSection() {
     ["Can you work with our existing codebase?", "Yes. We usually begin with a technical audit, then define the safest path for fixes, new features, modernization, or handover."],
     ["Do you provide design as well as development?", "Yes. We can create product UX, interface design, component systems, and production implementation in one delivery workflow."],
     ["What happens after launch?", "We can stay involved for monitoring, improvements, security updates, performance tuning, documentation, and support retainers."],
+    ["How does pricing work?", "We quote in writing before work starts: scope, fees, applicable taxes such as GST, the payment schedule, and any third-party costs like cloud hosting or licences. Extra work is agreed in writing before it begins. This website never takes payments. Cancellations and refunds are explained in our Refund Policy."],
     ["Can you build automation and AI features?", "Yes. We build practical automation around real operations, including internal tools, workflow bots, AI-assisted review, reporting, and data pipelines."],
   ];
 
@@ -865,76 +1030,322 @@ function ContactSection() {
       h("p", { className: "eyebrow" }, "Contact"),
       h("h2", { id: "contact-title" }, "Build the next version of your business software"),
       h("p", null, "Share what you need to launch, automate with AI, or improve. We will map the technical path and next steps."),
-      h("div", { className: "contact-meta" }, h("a", { href: `mailto:${SITE_EMAIL}` }, SITE_EMAIL), h("span", null, "cyphrontech.com")),
+      h("div", { className: "contact-meta" }, h(ContactLinks, null)),
     ),
     h(ContactForm, null),
   );
 }
 
-function ContactForm() {
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function validateEmailField(formData, errors) {
+  const email = normalizeInput(formData.get("email"), 120);
+
+  if (!email) {
+    errors.email = "Enter your email address.";
+  } else if (!EMAIL_PATTERN.test(email)) {
+    errors.email = "Enter a valid email address, for example name@company.com.";
+  }
+}
+
+function validateContact(form) {
+  const formData = new FormData(form);
+  const errors = {};
+
+  if (!normalizeInput(formData.get("name"), 80)) {
+    errors.name = "Enter your name.";
+  }
+
+  validateEmailField(formData, errors);
+
+  if (!CONTACT_PROJECT_OPTIONS.includes(formData.get("project"))) {
+    errors.project = "Choose a project type.";
+  }
+
+  if (!normalizeInput(formData.get("brief"), 2000)) {
+    errors.brief = "Tell us a little about what you need.";
+  }
+
+  if (formData.get("consent") !== "on") {
+    errors.consent = "Tick this box to confirm and agree before sending.";
+  }
+
+  return errors;
+}
+
+function validatePrivacyRequest(form) {
+  const formData = new FormData(form);
+  const errors = {};
+
+  if (!normalizeInput(formData.get("name"), 80)) {
+    errors.name = "Enter your name.";
+  }
+
+  validateEmailField(formData, errors);
+
+  if (!PRIVACY_REQUEST_TYPES.includes(formData.get("requestType"))) {
+    errors.requestType = "Choose what you would like us to do.";
+  }
+
+  return errors;
+}
+
+function useSecureSubmit({ collectionKey, buildPayload, buildMailto, successMessage, validate }) {
+  const formRef = useRef(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formStatus, setFormStatus] = useState({ message: "", tone: "neutral" });
   const [emailDraftUrl, setEmailDraftUrl] = useState("");
+  const [errors, setErrors] = useState({});
+  // Start as "consented" so the pre-rendered HTML has no opt-in box; it is shown after mount
+  // only when the visitor has not accepted cookies in the launch dialog.
+  const [securityConsent, setSecurityConsent] = useState(true);
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const form = event.currentTarget;
+  useEffect(() => {
+    const sync = () => setSecurityConsent(Boolean(readConsent()?.security));
+    sync();
+    return subscribeConsent(sync);
+  }, []);
+
+  const send = async () => {
+    const form = formRef.current;
     let payload;
+
+    if (!form) {
+      return;
+    }
 
     setIsSubmitting(true);
     setEmailDraftUrl("");
     setFormStatus({ message: "Sending your message...", tone: "neutral" });
 
     try {
-      payload = getContactPayload(form);
+      payload = buildPayload(form);
 
       if (!payload) {
         form.reset();
-        setFormStatus({ message: "Message sent. We will get back to you soon.", tone: "success" });
+        setFormStatus({ message: successMessage, tone: "success" });
+        return;
+      }
+
+      // Ticking the optional box in the form counts as accepting spam protection.
+      if (form.elements.security?.checked) {
+        saveConsent({ security: true });
+      }
+
+      if (!readConsent()?.security) {
+        // Nothing from Google is loaded without permission.
+        setEmailDraftUrl(buildMailto(payload));
+        setFormStatus({
+          message: "To send through this form, tick the spam protection box above. Or use the email draft.",
+          tone: "error",
+        });
+        form.elements.security?.focus();
         return;
       }
 
       const contactService = await getContactService();
-      const submissionRef = await contactService.addSubmission(payload);
-      console.info("Contact submission saved", { path: submissionRef.path });
+      await contactService.addSubmission(collectionKey, payload);
       form.reset();
-      setFormStatus({ message: "Message sent. We will get back to you soon.", tone: "success" });
+      setFormStatus({ message: successMessage, tone: "success" });
     } catch (error) {
-      console.error("Contact form submission failed", error);
-      const mailtoUrl = payload ? buildMailtoUrl(payload) : `mailto:${SITE_EMAIL}`;
-      const message = error?.message === "firebase-not-configured" || error?.message === "app-check-not-configured"
-        ? `Contact form is not configured yet. Open an email draft to ${SITE_EMAIL}.`
-        : `Could not save to Firebase. Open an email draft to ${SITE_EMAIL}.`;
+      console.error("Form submission failed", error);
 
-      setEmailDraftUrl(mailtoUrl);
       if (payload) {
-        window.location.href = mailtoUrl;
+        setEmailDraftUrl(buildMailto(payload));
       }
-      setFormStatus({ message, tone: "error" });
+
+      setFormStatus({
+        message: `We could not send this from the website. Please use the email draft below, or write to ${SITE_EMAIL}.`,
+        tone: "error",
+      });
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const submitIfValid = () => {
+    const form = formRef.current;
+    const found = validate(form);
+    const names = Object.keys(found);
+
+    if (names.length) {
+      setErrors(found);
+      setEmailDraftUrl("");
+      setFormStatus({ message: `Please fix ${names.length === 1 ? "the highlighted field" : "the highlighted fields"} and send again.`, tone: "error" });
+      form.elements[names[0]]?.focus();
+      return false;
+    }
+
+    setErrors({});
+    return true;
+  };
+
+  return {
+    formRef,
+    isSubmitting,
+    formStatus,
+    emailDraftUrl,
+    securityConsent,
+    errors,
+    handleSubmit: (event) => {
+      event.preventDefault();
+
+      if (submitIfValid()) {
+        send();
+      }
+    },
+    clearError: (event) => {
+      const name = event.target?.name;
+
+      if (name && errors[name]) {
+        setErrors((current) => {
+          const { [name]: removed, ...rest } = current;
+          return rest;
+        });
+      }
+    },
+  };
+}
+
+function NewTabNote() {
+  return h("span", { className: "sr-only" }, " (opens in a new tab)");
+}
+
+function FormStatus({ formStatus, emailDraftUrl }) {
   return h(
-    "form",
-    { className: "contact-form", action: `mailto:${SITE_EMAIL}`, method: "post", encType: "text/plain", "data-contact-form": true, onSubmit: handleSubmit, "aria-busy": String(isSubmitting) },
-    h("label", null, h("span", null, "Name"), h("input", { type: "text", name: "name", autoComplete: "name", maxLength: 80, required: true })),
-    h("label", null, h("span", null, "Email"), h("input", { type: "email", name: "email", autoComplete: "email", maxLength: 120, required: true })),
+    "p",
+    { className: cx("form-status", formStatus.tone === "success" && "is-success", formStatus.tone === "error" && "is-error"), role: "status", "aria-live": "polite", "data-form-status": true },
+    formStatus.message,
+    emailDraftUrl ? [" ", h("a", { key: "email-draft", href: emailDraftUrl }, "Open email draft")] : null,
+  );
+}
+
+// Shown only to visitors who did not accept cookies in the launch dialog.
+function SecurityOptIn() {
+  return h(
+    "div",
+    { className: "field" },
     h(
       "label",
-      null,
-      h("span", null, "Project type"),
-      h("select", { name: "project", required: true }, h("option", { value: "" }, "Select one"), CONTACT_PROJECT_OPTIONS.map((option) => h("option", { key: option }, option))),
+      { className: "form-check" },
+      h("input", { type: "checkbox", name: "security" }),
+      h("span", null, "Allow Google reCAPTCHA spam protection so this form can send. It loads scripts from Google and may set a cookie. Optional: you can email us instead. ", h("a", { href: "cookie-policy.html", target: "_blank", rel: "noopener" }, "Cookie Policy", h(NewTabNote, null)), "."),
     ),
-    h("label", null, h("span", null, "Brief"), h("textarea", { name: "brief", rows: 5, maxLength: 2000, placeholder: "What are you trying to build or improve?", required: true })),
+  );
+}
+
+function FieldError({ id, message }) {
+  return message ? h("p", { className: "field-error", id }, h("span", { className: "sr-only" }, "Error: "), message) : null;
+}
+
+// Wraps one labelled control with an inline, screen-reader-linked error message.
+function Field({ formId, name, label, error, checkbox, render }) {
+  const errorId = `${formId}-${name}-error`;
+  const invalid = error ? { "aria-invalid": "true", "aria-describedby": errorId } : {};
+
+  return h(
+    "div",
+    { className: cx("field", error && "has-error") },
+    checkbox ? render(invalid) : h("label", null, h("span", null, label), render(invalid)),
+    h(FieldError, { id: errorId, message: error }),
+  );
+}
+
+function ContactForm() {
+  const { formRef, isSubmitting, formStatus, emailDraftUrl, securityConsent, errors, handleSubmit, clearError } = useSecureSubmit({
+    collectionKey: "contact",
+    buildPayload: getContactPayload,
+    buildMailto: buildMailtoUrl,
+    validate: validateContact,
+    successMessage: "Thank you. Your message has been sent and we will reply to the email address you gave.",
+  });
+  const formId = "contact";
+
+  return h(
+    "form",
+    { ref: formRef, className: "contact-form", "data-contact-form": true, noValidate: true, onSubmit: handleSubmit, onChange: clearError, onInput: clearError, "aria-busy": String(isSubmitting) },
+    h("p", { className: "form-note" }, "All fields are required."),
+    h(Field, { formId, name: "name", label: "Name", error: errors.name, render: (invalid) => h("input", { type: "text", name: "name", autoComplete: "name", maxLength: 80, required: true, ...invalid }) }),
+    h(Field, { formId, name: "email", label: "Email", error: errors.email, render: (invalid) => h("input", { type: "email", name: "email", autoComplete: "email", maxLength: 120, required: true, ...invalid }) }),
+    h(Field, {
+      formId,
+      name: "project",
+      label: "Project type",
+      error: errors.project,
+      render: (invalid) => h("select", { name: "project", required: true, ...invalid }, h("option", { value: "" }, "Select one"), CONTACT_PROJECT_OPTIONS.map((option) => h("option", { key: option }, option))),
+    }),
+    h(Field, {
+      formId,
+      name: "brief",
+      label: "Brief",
+      error: errors.brief,
+      render: (invalid) => h("textarea", { name: "brief", rows: 5, maxLength: 2000, placeholder: "What are you trying to build or improve? Please do not include passwords or sensitive personal data.", required: true, ...invalid }),
+    }),
     h("label", { className: "form-honeypot", "aria-hidden": "true" }, h("span", null, "Company website"), h("input", { type: "text", name: "company_website", autoComplete: "off", tabIndex: -1 })),
+    h(Field, {
+      formId,
+      name: "consent",
+      checkbox: true,
+      error: errors.consent,
+      render: (invalid) =>
+        h(
+          "label",
+          { className: "form-check" },
+          h("input", { type: "checkbox", name: "consent", required: true, ...invalid }),
+          h("span", null, "I am 18 or older, I have read the ", h("a", { href: "privacy-policy.html", target: "_blank", rel: "noopener" }, "Privacy Policy", h(NewTabNote, null)), ", and I agree that ", SITE.brand, " may use these details to reply to my enquiry."),
+        ),
+    }),
+    securityConsent ? null : h(SecurityOptIn, null),
     h("button", { className: "button button--primary", type: "submit", disabled: isSubmitting }, isSubmitting ? "Sending Message" : "Send Message"),
+    h(FormStatus, { formStatus, emailDraftUrl }),
+    h("p", { className: "form-note" }, "We use your details only to reply. We never sell them or use them for marketing."),
+  );
+}
+
+function PrivacyRequestPage() {
+  const { formRef, isSubmitting, formStatus, emailDraftUrl, securityConsent, errors, handleSubmit, clearError } = useSecureSubmit({
+    collectionKey: "privacy",
+    buildPayload: getPrivacyPayload,
+    buildMailto: buildPrivacyMailto,
+    validate: validatePrivacyRequest,
+    successMessage: "Thank you. We have received your request and will reply to the email address you gave within 30 days.",
+  });
+  const formId = "privacy";
+
+  return h(
+    "section",
+    { className: "section section--light legal", "aria-labelledby": "privacy-request-title" },
     h(
-      "p",
-      { className: cx("form-status", formStatus.tone === "success" && "is-success", formStatus.tone === "error" && "is-error"), role: "status", "aria-live": "polite", "data-form-status": true },
-      formStatus.message,
-      emailDraftUrl ? [" ", h("a", { key: "email-draft", href: emailDraftUrl }, "Open email draft")] : null,
+      "div",
+      { className: "legal__inner" },
+      h("p", { className: "eyebrow" }, "Your data"),
+      h("h1", { id: "privacy-request-title" }, "Privacy and data requests"),
+      h("p", { className: "legal__intro" }, "You can ask us for a copy of the personal data we hold about you, to correct it, to delete it, or to withdraw a consent you gave. Use the form below or email us. Both are treated the same."),
+      h("ul", { className: "legal__list" }, [
+        "We reply to the email address you give us, and may ask a question to confirm it is you before we act.",
+        "We aim to respond within 30 days. There is no fee for reasonable requests.",
+        "Deleting your data does not affect records we must keep by law, such as tax records for paid projects.",
+      ].map((item) => h("li", { key: item }, item))),
+      h("p", null, "Prefer email? Write to ", h("a", { href: `mailto:${SITE_EMAIL}?subject=${encodeURIComponent("Privacy request")}` }, SITE_EMAIL), ". Read how we handle data in our ", h("a", { href: "privacy-policy.html" }, "Privacy Policy"), "."),
+      h(
+        "form",
+        { ref: formRef, className: "contact-form contact-form--light", noValidate: true, onSubmit: handleSubmit, onChange: clearError, onInput: clearError, "aria-busy": String(isSubmitting) },
+        h("p", { className: "form-note" }, "All fields are required except details."),
+        h(Field, { formId, name: "name", label: "Name", error: errors.name, render: (invalid) => h("input", { type: "text", name: "name", autoComplete: "name", maxLength: 80, required: true, ...invalid }) }),
+        h(Field, { formId, name: "email", label: "Email", error: errors.email, render: (invalid) => h("input", { type: "email", name: "email", autoComplete: "email", maxLength: 120, required: true, ...invalid }) }),
+        h(Field, {
+          formId,
+          name: "requestType",
+          label: "What would you like us to do?",
+          error: errors.requestType,
+          render: (invalid) => h("select", { name: "requestType", required: true, ...invalid }, h("option", { value: "" }, "Select one"), PRIVACY_REQUEST_TYPES.map((option) => h("option", { key: option }, option))),
+        }),
+        h("label", null, h("span", null, "Details (optional)"), h("textarea", { name: "details", rows: 4, maxLength: 2000, placeholder: "Anything that helps us find your data, such as the date you contacted us. Please do not include sensitive personal data." })),
+        h("label", { className: "form-honeypot", "aria-hidden": "true" }, h("span", null, "Company website"), h("input", { type: "text", name: "company_website", autoComplete: "off", tabIndex: -1 })),
+        securityConsent ? null : h(SecurityOptIn, null),
+        h("button", { className: "button button--primary", type: "submit", disabled: isSubmitting }, isSubmitting ? "Sending Request" : "Send Request"),
+        h(FormStatus, { formStatus, emailDraftUrl }),
+      ),
     ),
   );
 }
@@ -990,7 +1401,7 @@ function CaseDetailPage({ study }) {
       h(
         "div",
         { className: "case-detail-hero__content" },
-        h("p", { className: "eyebrow" }, "Case study"),
+        h("p", { className: "eyebrow" }, study.isBuild ? "Working build" : "Concept case study"),
         h("h1", null, study.title),
         h("p", { className: "case-detail-hero__lead" }, study.detailLead),
         h("div", { className: "case-detail-hero__actions" }, h("a", { className: "button button--primary", href: "index.html#contact" }, "Build Something Similar"), h("a", { className: "button button--ghost", href: "index.html#work" }, "All Case Studies")),
@@ -999,12 +1410,13 @@ function CaseDetailPage({ study }) {
     h(
       "section",
       { className: "case-detail" },
-      h("div", { className: "case-detail__stats", "aria-label": `${study.title} case metrics` }, study.stats.map(([label, value]) => h("div", { key: label }, h("span", null, label), h("strong", null, value)))),
+      h("div", { className: "case-detail__stats", role: "group", "aria-label": `${study.title} project details` }, study.stats.map(([label, value]) => h("div", { key: label }, h("span", null, label), h("strong", null, value)))),
+      h("p", { className: "case-detail__note" }, study.isBuild ? "A working build by CyphronTech that is not yet live. No usage or client results are claimed." : "An illustrative concept designed by CyphronTech. It has not been built for a client and no results are claimed."),
       h(
         "div",
         { className: "case-detail__overview" },
         h("div", null, h("p", { className: "eyebrow" }, "Overview"), h("h2", null, study.overviewTitle), study.overviewText.map((paragraph) => h("p", { key: paragraph }, paragraph))),
-        h("div", { className: "case-detail__image" }, h("img", { src: study.image, alt: study.alt, loading: "lazy", decoding: "async" })),
+        h("div", { className: "case-detail__image" }, h("img", { src: study.image, alt: study.alt, loading: "lazy", decoding: "async", ...imageProps(study.image) })),
       ),
       h(CaseBlocksSection, { title: "What the build focused on", blocks: study.focus }),
       h(CaseBlocksSection, { eyebrow: "Scope", title: study.scopeTitle, blocks: study.scope, four: true }),
@@ -1060,10 +1472,23 @@ function buildMailtoUrl(payload) {
     `Name: ${payload.name}`,
     `Email: ${payload.email}`,
     `Project type: ${payload.project}`,
-    `Page: ${payload.page}`,
     "",
     "Brief:",
     payload.brief,
+  ].join("\n"));
+
+  return `mailto:${SITE_EMAIL}?subject=${subject}&body=${body}`;
+}
+
+function buildPrivacyMailto(payload) {
+  const subject = encodeURIComponent(`Privacy request: ${payload.requestType}`);
+  const body = encodeURIComponent([
+    `Name: ${payload.name}`,
+    `Email: ${payload.email}`,
+    `Request: ${payload.requestType}`,
+    "",
+    "Details:",
+    payload.details,
   ].join("\n"));
 
   return `mailto:${SITE_EMAIL}?subject=${subject}&body=${body}`;
@@ -1082,12 +1507,41 @@ function getContactPayload(form) {
     email: normalizeInput(formData.get("email"), 120).toLowerCase(),
     project: normalizeInput(formData.get("project"), 80),
     brief: normalizeInput(formData.get("brief"), 2000),
-    page: `${window.location.origin}${window.location.pathname}`.slice(0, 300),
+    consent: formData.get("consent") === "on",
+    consentVersion: SITE.policyVersion,
     source: "website-contact-form",
     status: "new",
   };
 
   if (!payload.name || !payload.email || !CONTACT_PROJECT_OPTIONS.includes(payload.project) || !payload.brief) {
+    throw new Error("missing-fields");
+  }
+
+  if (!payload.consent) {
+    throw new Error("consent-required");
+  }
+
+  return payload;
+}
+
+function getPrivacyPayload(form) {
+  const formData = new FormData(form);
+  const honeypot = normalizeInput(formData.get("company_website"), 120);
+
+  if (honeypot) {
+    return null;
+  }
+
+  const payload = {
+    name: normalizeInput(formData.get("name"), 80),
+    email: normalizeInput(formData.get("email"), 120).toLowerCase(),
+    requestType: normalizeInput(formData.get("requestType"), 80),
+    details: normalizeInput(formData.get("details"), 2000),
+    source: "privacy-request-form",
+    status: "new",
+  };
+
+  if (!payload.name || !payload.email || !PRIVACY_REQUEST_TYPES.includes(payload.requestType)) {
     throw new Error("missing-fields");
   }
 
@@ -1100,6 +1554,10 @@ function hasFirebaseConfig(config) {
 }
 
 async function getContactService() {
+  if (!readConsent()?.security) {
+    throw new Error("security-consent-required");
+  }
+
   if (!contactServicePromise) {
     contactServicePromise = (async () => {
       const { firebaseConfig, contactFormSettings } = window.cyphronContactFirebase || {};
@@ -1108,31 +1566,39 @@ async function getContactService() {
         throw new Error("firebase-not-configured");
       }
 
-      const [{ initializeApp }, firestoreModule] = await Promise.all([
-        import(`https://www.gstatic.com/firebasejs/${FIREBASE_SDK_VERSION}/firebase-app.js`),
-        import(`https://www.gstatic.com/firebasejs/${FIREBASE_SDK_VERSION}/firebase-firestore.js`),
-      ]);
-
-      const app = initializeApp(firebaseConfig);
-
       if (!contactFormSettings.appCheck?.enabled || !contactFormSettings.appCheck.siteKey) {
         throw new Error("app-check-not-configured");
       }
 
-      const { initializeAppCheck, ReCaptchaV3Provider } = await import(`https://www.gstatic.com/firebasejs/${FIREBASE_SDK_VERSION}/firebase-app-check.js`);
-      initializeAppCheck(app, {
-        provider: new ReCaptchaV3Provider(contactFormSettings.appCheck.siteKey),
+      const [{ initializeApp }, firestoreModule, appCheckModule] = await Promise.all([
+        import(`https://www.gstatic.com/firebasejs/${FIREBASE_SDK_VERSION}/firebase-app.js`),
+        import(`https://www.gstatic.com/firebasejs/${FIREBASE_SDK_VERSION}/firebase-firestore.js`),
+        import(`https://www.gstatic.com/firebasejs/${FIREBASE_SDK_VERSION}/firebase-app-check.js`),
+      ]);
+
+      const app = initializeApp(firebaseConfig);
+      appCheckModule.initializeAppCheck(app, {
+        provider: new appCheckModule.ReCaptchaV3Provider(contactFormSettings.appCheck.siteKey),
         isTokenAutoRefreshEnabled: true,
       });
 
       const db = firestoreModule.getFirestore(app);
-      const collectionName = contactFormSettings.collectionName || "contactSubmissions";
+      const collections = {
+        contact: contactFormSettings.collectionName || "contactSubmissions",
+        privacy: PRIVACY_COLLECTION,
+      };
 
       return {
-        addSubmission: (payload) => firestoreModule.addDoc(firestoreModule.collection(db, collectionName), {
-          ...payload,
-          createdAt: firestoreModule.serverTimestamp(),
-        }),
+        addSubmission: (collectionKey, payload) => {
+          if (!readConsent()?.security) {
+            throw new Error("security-consent-required");
+          }
+
+          return firestoreModule.addDoc(firestoreModule.collection(db, collections[collectionKey]), {
+            ...payload,
+            createdAt: firestoreModule.serverTimestamp(),
+          });
+        },
       };
     })();
   }
@@ -1145,9 +1611,232 @@ async function getContactService() {
   }
 }
 
+function renderInline(text) {
+  const parts = [];
+  const pattern = /\[([^\]]+)\]\(([^)]+)\)/g;
+  let last = 0;
+  let match;
+  let index = 0;
+
+  while ((match = pattern.exec(text))) {
+    if (match.index > last) {
+      parts.push(text.slice(last, match.index));
+    }
+
+    const external = /^https?:/.test(match[2]);
+    index += 1;
+    parts.push(h("a", { key: `link-${index}`, href: match[2], ...(external ? { target: "_blank", rel: "noopener noreferrer" } : {}) }, match[1], external ? h(NewTabNote, null) : null));
+    last = match.index + match[0].length;
+  }
+
+  if (last < text.length) {
+    parts.push(text.slice(last));
+  }
+
+  return parts;
+}
+
+function LegalBlock({ block, label }) {
+  if (typeof block === "string") {
+    return h("p", null, renderInline(block));
+  }
+
+  if (Array.isArray(block)) {
+    return h("ul", { className: "legal__list" }, block.map((item) => h("li", { key: item }, renderInline(item))));
+  }
+
+  if (block.table) {
+    return h(
+      "div",
+      { className: "legal__table-wrap", role: "region", "aria-label": `${label} table`, tabIndex: 0 },
+      h(
+        "table",
+        { className: "legal__table" },
+        h("thead", null, h("tr", null, block.table.head.map((cell) => h("th", { key: cell, scope: "col" }, cell)))),
+        h("tbody", null, block.table.rows.map((row) => h("tr", { key: row[0] }, row.map((cell, index) => (index === 0 ? h("th", { key: cell, scope: "row" }, cell) : h("td", { key: cell }, cell)))))),
+      ),
+    );
+  }
+
+  return null;
+}
+
+function LegalPage({ page }) {
+  return h(
+    "section",
+    { className: "section section--light legal", "aria-labelledby": "legal-title" },
+    h(
+      "div",
+      { className: "legal__inner" },
+      h("p", { className: "eyebrow" }, page.eyebrow || "Legal"),
+      h("h1", { id: "legal-title" }, page.title),
+      h("p", { className: "legal__meta" }, `Last updated: ${SITE.policiesUpdated}`),
+      h("p", { className: "legal__intro" }, page.intro),
+      h(
+        "nav",
+        { className: "legal__toc", "aria-labelledby": "legal-toc-title" },
+        h("h2", { id: "legal-toc-title" }, "On this page"),
+        h("ol", null, page.sections.map((section) => h("li", { key: section.id }, h("a", { href: `#${section.id}` }, section.heading)))),
+      ),
+      page.sections.map((section) =>
+        h(
+          "section",
+          { key: section.id, id: section.id, className: "legal__section", "aria-labelledby": `${section.id}-heading` },
+          h("h2", { id: `${section.id}-heading` }, section.heading),
+          section.body.map((block, index) => h(LegalBlock, { key: index, block, label: section.heading })),
+        ),
+      ),
+    ),
+  );
+}
+
+function ConsentBanner() {
+  const [consent, setConsent] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [wasReopened, setWasReopened] = useState(false);
+  const bannerRef = useRef(null);
+
+  useEffect(() => {
+    // Read the stored choice after mount so the pre-rendered HTML never contains the notice.
+    const stored = readConsent();
+    setConsent(stored);
+    setIsOpen(!stored);
+
+    const sync = () => setConsent(readConsent());
+    const reopen = () => {
+      setWasReopened(true);
+      setIsOpen(true);
+    };
+    const unsubscribe = subscribeConsent(sync);
+    window.addEventListener(CONSENT_OPEN_EVENT, reopen);
+
+    return () => {
+      unsubscribe();
+      window.removeEventListener(CONSENT_OPEN_EVENT, reopen);
+    };
+  }, []);
+
+  useEffect(() => {
+    // Only move focus when the visitor reopened it themselves; on arrival it never steals focus.
+    if (isOpen && wasReopened) {
+      bannerRef.current?.focus();
+    }
+  }, [isOpen, wasReopened]);
+
+  if (!isOpen) {
+    return null;
+  }
+
+  const choose = (security) => {
+    saveConsent({ security });
+    setIsOpen(false);
+    setWasReopened(false);
+  };
+
+  return h(
+    "section",
+    { className: "consent", ref: bannerRef, tabIndex: -1, "aria-label": "Cookie choices" },
+    h(
+      "p",
+      null,
+      "We use one optional cookie: Google reCAPTCHA, to protect our contact form from spam. No analytics or ad trackers. ",
+      h("a", { href: "cookie-policy.html" }, "Cookie Policy"),
+      consent ? ` Current choice: ${consent.security ? "accepted" : "declined"}.` : "",
+    ),
+    h(
+      "div",
+      { className: "consent__actions" },
+      h("button", { type: "button", className: "consent__button", onClick: () => choose(false) }, "Decline"),
+      h("button", { type: "button", className: "consent__button", onClick: () => choose(true) }, "Accept"),
+      consent ? h("button", { type: "button", className: "consent__close", onClick: () => setIsOpen(false) }, "Close") : null,
+    ),
+  );
+}
+
+function Footer() {
+  const registration = [SITE.registrationNumber && `LLPIN ${SITE.registrationNumber}`, SITE.gstin && `GSTIN ${SITE.gstin}`].filter(Boolean).join(" \u00b7 ");
+  const details = [
+    `\u00a9 ${new Date().getFullYear()} ${SITE.legalName}`,
+    registration,
+    SITE.registeredAddress,
+    h("a", { href: `mailto:${SITE_EMAIL}` }, SITE_EMAIL),
+    h("a", { href: `tel:${SITE_PHONE}` }, SITE_PHONE_DISPLAY),
+    h("a", { href: LINKEDIN_URL, target: "_blank", rel: "noopener noreferrer" }, "LinkedIn", h(NewTabNote, null)),
+    h("a", { href: `mailto:${SITE.grievanceOfficer.email}` }, "Grievance Officer", SITE.grievanceOfficer.name ? `: ${SITE.grievanceOfficer.name}` : ""),
+  ].filter(Boolean);
+
+  return h(
+    "footer",
+    { className: "footer" },
+    h(
+      "div",
+      { className: "footer__main" },
+      h(Brand, { footer: true }),
+      h(
+        "nav",
+        { className: "footer__nav", "aria-label": "Footer" },
+        h(
+          "ul",
+          null,
+          h("li", { key: "contact" }, h("a", { href: "index.html#contact" }, "Contact")),
+          legalLinks.map(([label, href]) => h("li", { key: href }, h("a", { href }, label))),
+          h("li", { key: "cookie-settings" }, h("button", { type: "button", className: "footer__link-button", onClick: openConsentSettings }, "Cookie settings")),
+        ),
+      ),
+    ),
+    h("ul", { className: "footer__meta" }, details.map((item, index) => h("li", { key: index }, item))),
+  );
+}
+
+// Eased "inertia" mouse-wheel scrolling (Lenis, vendored). Skipped for visitors who
+// ask for reduced motion and on touch devices, which already scroll smoothly.
+function startSmoothScroll() {
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const touchDevice = window.matchMedia("(pointer: coarse)");
+  let lenis;
+  let frame = 0;
+  let unmounted = false;
+
+  const stop = () => {
+    window.cancelAnimationFrame(frame);
+    lenis?.destroy();
+    lenis = undefined;
+  };
+
+  const start = async () => {
+    if (lenis || reduceMotion.matches || touchDevice.matches) {
+      return;
+    }
+
+    const { default: Lenis } = await import("../assets/vendor/lenis.mjs?v=lenis-1.1.20");
+
+    if (unmounted || lenis || reduceMotion.matches) {
+      return;
+    }
+
+    lenis = new Lenis({ lerp: 0.075, smoothWheel: true, anchors: { offset: -70 } });
+    const tick = (time) => {
+      lenis?.raf(time);
+      frame = window.requestAnimationFrame(tick);
+    };
+    frame = window.requestAnimationFrame(tick);
+  };
+
+  const onPreferenceChange = () => (reduceMotion.matches ? stop() : start());
+  reduceMotion.addEventListener("change", onPreferenceChange);
+  start();
+
+  return () => {
+    unmounted = true;
+    reduceMotion.removeEventListener("change", onPreferenceChange);
+    stop();
+  };
+}
+
 function App() {
   const route = useMemo(getRoute, []);
   usePageSetup(route);
+  useEffect(() => startSmoothScroll(), []);
 
   let page;
 
@@ -1155,6 +1844,10 @@ function App() {
     page = h(ServiceDetailPage, { service: route.service });
   } else if (route.type === "case") {
     page = h(CaseDetailPage, { study: route.study });
+  } else if (route.type === "legal") {
+    page = h(LegalPage, { page: route.page });
+  } else if (route.type === "privacy-request") {
+    page = h(PrivacyRequestPage, null);
   } else if (route.type === "not-found") {
     page = h(NotFoundPage, null);
   } else {
@@ -1165,10 +1858,15 @@ function App() {
     React.Fragment,
     null,
     h("a", { className: "skip-link", href: "#main" }, "Skip to content"),
+    h(ConsentBanner, null),
     h(Header, { route }),
     h("main", { id: "main" }, page),
     h(Footer, null),
   );
 }
 
-createRoot(document.getElementById("root")).render(h(App, null));
+export { App, currentFile, getRoute, services, caseStudies };
+
+if (typeof document !== "undefined" && document.getElementById("root")) {
+  createRoot(document.getElementById("root")).render(h(App, null));
+}
