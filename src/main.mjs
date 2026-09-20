@@ -4,6 +4,10 @@ import "../assets/firebase-config.js?v=appcheck-v3";
 
 const h = React.createElement;
 const SITE_EMAIL = "cyphrontechllp@gmail.com";
+const SITE_PHONE = "+918275257252";
+const SITE_PHONE_DISPLAY = "+91 82752 57252";
+const LINKEDIN_URL = "https://www.linkedin.com/company/cyphron-tech";
+const LINKEDIN_DISPLAY = "linkedin.com/company/cyphron-tech";
 const FIREBASE_SDK_VERSION = "12.7.0";
 const CONTACT_PROJECT_OPTIONS = [
   "Website or SaaS platform",
@@ -552,13 +556,35 @@ function Header({ route }) {
   );
 }
 
+const LINKEDIN_ICON_PATH = "M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z";
+
+const MAIL_ICON_PATH = "M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z";
+const PHONE_ICON_PATH = "M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.61 21 3 13.39 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1.02l-2.2 2.2z";
+
+function ContactIcon({ path }) {
+  return h("svg", { viewBox: "0 0 24 24", width: 20, height: 20, fill: "currentColor", "aria-hidden": "true", focusable: "false" }, h("path", { d: path }));
+}
+
+function ContactLinks() {
+  return [
+    h("a", { key: "email", className: "contact-link", href: `mailto:${SITE_EMAIL}` }, h(ContactIcon, { path: MAIL_ICON_PATH }), SITE_EMAIL),
+    h("a", { key: "phone", className: "contact-link", href: `tel:${SITE_PHONE}` }, h(ContactIcon, { path: PHONE_ICON_PATH }), SITE_PHONE_DISPLAY),
+    h(
+      "a",
+      { key: "linkedin", className: "contact-link", href: LINKEDIN_URL, target: "_blank", rel: "noopener noreferrer", title: "CyphronTech on LinkedIn" },
+      h(ContactIcon, { path: LINKEDIN_ICON_PATH }),
+      LINKEDIN_DISPLAY,
+    ),
+  ];
+}
+
 function Footer() {
   return h(
     "footer",
     { className: "footer" },
     h(Brand, { footer: true }),
     h("p", null, "Building the future with code, AI automation, and innovation."),
-    h("a", { href: `mailto:${SITE_EMAIL}` }, SITE_EMAIL),
+    h("a", { className: "footer__contact", href: "index.html#contact" }, "Contact Us"),
   );
 }
 
@@ -865,7 +891,7 @@ function ContactSection() {
       h("p", { className: "eyebrow" }, "Contact"),
       h("h2", { id: "contact-title" }, "Build the next version of your business software"),
       h("p", null, "Share what you need to launch, automate with AI, or improve. We will map the technical path and next steps."),
-      h("div", { className: "contact-meta" }, h("a", { href: `mailto:${SITE_EMAIL}` }, SITE_EMAIL), h("span", null, "cyphrontech.com")),
+      h("div", { className: "contact-meta" }, h(ContactLinks, null)),
     ),
     h(ContactForm, null),
   );
@@ -918,7 +944,7 @@ function ContactForm() {
 
   return h(
     "form",
-    { className: "contact-form", action: `mailto:${SITE_EMAIL}`, method: "post", encType: "text/plain", "data-contact-form": true, onSubmit: handleSubmit, "aria-busy": String(isSubmitting) },
+    { className: "contact-form", "data-contact-form": true, onSubmit: handleSubmit, "aria-busy": String(isSubmitting) },
     h("label", null, h("span", null, "Name"), h("input", { type: "text", name: "name", autoComplete: "name", maxLength: 80, required: true })),
     h("label", null, h("span", null, "Email"), h("input", { type: "email", name: "email", autoComplete: "email", maxLength: 120, required: true })),
     h(

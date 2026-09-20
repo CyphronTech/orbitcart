@@ -1120,8 +1120,18 @@ textarea {
   font-weight: 750;
 }
 
-.footer > a:last-child {
+.contact-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  justify-self: start;
+  width: fit-content;
+}
+
+.footer__contact {
   justify-self: end;
+  font-weight: 750;
+  white-space: nowrap;
 }
 
 .service-detail-hero {
@@ -1848,7 +1858,7 @@ textarea {
     text-align: left;
   }
 
-  .footer > a:last-child {
+  .footer__contact {
     justify-self: start;
   }
 }
