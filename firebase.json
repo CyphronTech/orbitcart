@@ -6,8 +6,13 @@
       "firestore.rules",
       "FIREBASE_SETUP.md",
       "assets/firebase-config.example.js",
+      "**/*.md",
       "**/.*",
-      "**/node_modules/**"
+      "**/node_modules/**",
+      "package.json",
+      "package-lock.json",
+      "scripts/**",
+      ".build/**"
     ],
     "headers": [
       {
@@ -15,7 +20,7 @@
         "headers": [
           {
             "key": "Content-Security-Policy",
-            "value": "default-src 'self'; script-src 'self' https://esm.sh https://www.gstatic.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; connect-src 'self' https://*.googleapis.com https://firestore.googleapis.com https://firebaseappcheck.googleapis.com https://*.firebaseio.com; img-src 'self' data:; style-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src https://www.google.com/recaptcha/ https://recaptcha.google.com/recaptcha/; frame-ancestors 'none'; upgrade-insecure-requests"
+            "value": "default-src 'self'; script-src 'self' https://www.gstatic.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; connect-src 'self' https://*.googleapis.com https://firestore.googleapis.com https://firebaseappcheck.googleapis.com https://*.firebaseio.com; img-src 'self' data:; style-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src https://www.google.com/recaptcha/ https://recaptcha.google.com/recaptcha/; frame-ancestors 'none'; upgrade-insecure-requests"
           },
           {
             "key": "Strict-Transport-Security",
@@ -38,12 +43,15 @@
             "value": "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()"
           }
         ]
-      }
-    ],
-    "rewrites": [
+      },
       {
-        "source": "**",
-        "destination": "/index.html"
+        "source": "**/*.@(webp|jpg|png|svg|woff2)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=604800"
+          }
+        ]
       }
     ]
   },
