@@ -20,7 +20,7 @@ const { SITE, pageUrl } = await import(pathToFileURL(path.join(root, "src/site-c
 const { legalPages } = await import(pathToFileURL(path.join(root, "src/legal.mjs")).href);
 
 // Cache-busting token for CSS/JS query strings. Bump when assets change.
-const ASSET_VERSION = "revert-4";
+const ASSET_VERSION = "revert-6";
 const OG_IMAGE = "assets/og-image.jpg";
 const FONT = "assets/fonts/inter-latin-wght-normal.woff2";
 

@@ -3237,3 +3237,118 @@ html.lenis body {
   font-size: 0.82rem;
   line-height: 1.4;
 }
+
+/* Phones: shorter sections and image banners so the page is less of a long scroll */
+@media (max-width: 640px) {
+  .section,
+  .ai-approach,
+  .case-studies,
+  .tech-stack,
+  .faq,
+  .contact {
+    padding-top: 52px;
+    padding-bottom: 52px;
+  }
+
+  .hero__stats,
+  .service-strip {
+    display: none;
+  }
+
+  .timeline article {
+    min-height: 120px;
+    padding: 18px;
+  }
+
+  .tech-card {
+    min-height: 0;
+    padding: 18px;
+  }
+
+  .tech-card h3 {
+    margin-bottom: 12px;
+  }
+
+  .tech-tags {
+    gap: 8px;
+  }
+
+  .tech-tag {
+    min-height: 40px;
+  }
+
+  .services-grid {
+    gap: 14px;
+  }
+
+  .service-card__image {
+    aspect-ratio: 16 / 7;
+  }
+
+  .service-card h3 {
+    margin: 16px 18px 8px;
+  }
+
+  .service-card p {
+    margin: 0 18px 14px;
+  }
+
+  .service-card__link {
+    margin: 0 18px 18px;
+  }
+
+  /* Case cards: image first, then title, details, a short description and the button */
+  .case-card {
+    gap: 14px;
+  }
+
+  .case-card__copy {
+    display: contents;
+  }
+
+  .case-card__visual {
+    order: 0;
+    min-height: 0;
+  }
+
+  .case-card__mockup {
+    min-height: 0;
+    height: auto;
+    aspect-ratio: 16 / 10;
+  }
+
+  .case-card__copy h3 {
+    order: 1;
+    font-size: 1.6rem;
+  }
+
+  .case-metrics {
+    order: 2;
+    display: flex;
+    margin-top: 0;
+    gap: 8px;
+  }
+
+  .case-metrics span {
+    width: auto;
+    min-height: 36px;
+    padding: 0 12px;
+    font-size: 0.85rem;
+  }
+
+  .case-card__copy p {
+    order: 3;
+    margin: 0;
+    font-size: 0.95rem;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    overflow: hidden;
+  }
+
+  .case-cta {
+    order: 4;
+    margin-top: 4px;
+  }
+}
