@@ -7,8 +7,7 @@
 // Generates: every *.html page, 404.html, sitemap.xml, robots.txt, llms.txt
 
 import { build } from "esbuild";
-import { createHash } from "node:crypto";
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
@@ -21,27 +20,9 @@ const { SITE, pageUrl } = await import(pathToFileURL(path.join(root, "src/site-c
 const { legalPages } = await import(pathToFileURL(path.join(root, "src/legal.mjs")).href);
 
 // Cache-busting token for CSS/JS query strings. Bump when assets change.
-const ASSET_VERSION = "calm-7";
+const ASSET_VERSION = "revert-4";
 const OG_IMAGE = "assets/og-image.jpg";
-const FONT = "assets/fonts/ibm-plex-sans-latin-wght-normal.woff2";
-
-// The theme script runs inline (no extra request before first paint). The CSP allows exactly this
-// script by hash, and the hash is written into firebase.json so the two cannot drift apart.
-const NL = String.fromCharCode(10);
-const themeInit = readFileSync(path.join(scriptsDir, "../assets/theme-init.js"), "utf8")
-  .split(NL)
-  .filter((line) => !line.startsWith("//"))
-  .join(NL)
-  .trim();
-const themeHash = `'sha256-${createHash("sha256").update(themeInit).digest("base64")}'`;
-const firebasePath = path.join(root, "firebase.json");
-const firebase = JSON.parse(readFileSync(firebasePath, "utf8"));
-const csp = firebase.hosting.headers[0].headers.find((header) => header.key === "Content-Security-Policy");
-const updatedCsp = csp.value.replace(/script-src 'self'( 'sha256-[^']+')?/, `script-src 'self' ${themeHash}`);
-if (updatedCsp !== csp.value) {
-  csp.value = updatedCsp;
-  writeFileSync(firebasePath, JSON.stringify(firebase, null, 2) + NL, "utf8");
-}
+const FONT = "assets/fonts/inter-latin-wght-normal.woff2";
 
 mkdirSync(buildDir, { recursive: true });
 
@@ -171,8 +152,7 @@ function renderPage(page) {
     isNotFound ? '<base href="/">' : "",
     `<title>${esc(title)}</title>`,
     `<meta name="description" content="${esc(description)}">`,
-    '<meta name="theme-color" content="#090d15" media="(prefers-color-scheme: dark)">',
-    '<meta name="theme-color" content="#f1f3f6" media="(prefers-color-scheme: light)">',
+    '<meta name="theme-color" content="#0e1115">',
     isNotFound ? '<meta name="robots" content="noindex">' : `<link rel="canonical" href="${url}">`,
     isNotFound
       ? ""
@@ -193,7 +173,6 @@ function renderPage(page) {
         ].join("\n    "),
     '<link rel="icon" href="/assets/logo-mark.png?v=seo-5" type="image/png">',
     '<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">',
-    `<script>${themeInit}</script>`,
     `<link rel="stylesheet" href="/styles.css?v=${ASSET_VERSION}">`,
     `<link rel="preload" href="/${FONT}" as="font" type="font/woff2" crossorigin>`,
     structuredData(page, title, description),

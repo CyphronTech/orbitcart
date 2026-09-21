@@ -1,9 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState, createRoot, hydrateRoot } from "../assets/vendor/react-bundle.mjs?v=react-18.3.1-h";
 import "../assets/firebase-config.js?v=appcheck-v3";
-import { SITE, PRIVACY_REQUEST_TYPES, pagePath } from "./site-config.mjs?v=calm-7";
-import { CONSENT_OPEN_EVENT, openConsentSettings, readConsent, saveConsent, subscribeConsent } from "./consent.mjs?v=calm-7";
-import { currentTheme, subscribeTheme, toggleTheme } from "./theme.mjs?v=calm-7";
-import { legalByFile, legalLinks } from "./legal.mjs?v=calm-7";
+import { SITE, PRIVACY_REQUEST_TYPES, pagePath } from "./site-config.mjs?v=revert-4";
+import { CONSENT_OPEN_EVENT, openConsentSettings, readConsent, saveConsent, subscribeConsent } from "./consent.mjs?v=revert-4";
+import { legalByFile, legalLinks } from "./legal.mjs?v=revert-4";
 
 const h = React.createElement;
 const SITE_EMAIL = SITE.email;
@@ -650,28 +649,6 @@ function Brand({ footer = false }) {
   );
 }
 
-// Switches between light and dark. The default follows the system setting (see theme.mjs).
-// A sliding switch: sun on the left, moon on the right. CSS moves the thumb, so the pre-rendered HTML matches.
-const ICON = { viewBox: "0 0 24 24", width: 16, height: 16, fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": "true", focusable: "false" };
-
-function ThemeToggle() {
-  const [theme, setTheme] = useState(null);
-
-  useEffect(() => {
-    const sync = () => setTheme(currentTheme());
-    sync();
-    return subscribeTheme(sync);
-  }, []);
-
-  return h(
-    "button",
-    { className: "theme-toggle", type: "button", "aria-label": "Dark theme", "aria-pressed": theme === null ? undefined : String(theme === "dark"), onClick: toggleTheme },
-    h("span", { className: "theme-toggle__thumb", "aria-hidden": "true" }),
-    h("svg", { ...ICON, className: "theme-toggle__sun" }, h("circle", { cx: 12, cy: 12, r: 4 }), h("path", { d: "M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" })),
-    h("svg", { ...ICON, className: "theme-toggle__moon" }, h("path", { d: "M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" })),
-  );
-}
-
 function Header({ route }) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeId, setActiveId] = useState("");
@@ -752,7 +729,6 @@ function Header({ route }) {
         { className: cx("nav-menu", isOpen && "is-open"), id: "primary-menu", "data-menu": true },
         links.map(([label, href]) => h("a", { key: href, href: `${linkPrefix}${href}`, "aria-current": onHome && activeId === href.slice(1) ? "location" : undefined, onClick: () => setIsOpen(false) }, label)),
       ),
-      h(ThemeToggle, null),
     ),
   );
 }
@@ -804,14 +780,21 @@ function HeroSection() {
     h(
       "div",
       { className: "hero__content" },
-      h("p", { className: "eyebrow" }, "Software development agency"),
+      h("p", { className: "eyebrow" }, "CyphronTech · Software development agency"),
       h("h1", { id: "hero-title" }, "Custom software, mobile apps, and AI automation"),
-      h("p", { className: "hero__lead" }, "We design and build web platforms, mobile apps, AI automation, and cloud systems that help teams move faster."),
+      h("p", { className: "hero__lead" }, "We design and engineer secure web platforms, mobile apps, AI automation workflows, and cloud systems that help modern teams move faster."),
       h(
         "div",
         { className: "hero__actions", "aria-label": "Primary actions" },
-        h("a", { className: "button button--primary", href: "#contact" }, "Start a project"),
-        h("a", { className: "button button--quiet", href: "#work" }, "See our work"),
+        h("a", { className: "button button--primary", href: "#contact" }, h("span", { className: "button__icon button__icon--arrow", "aria-hidden": "true" }), "Start a Project"),
+        h("a", { className: "button button--ghost", href: "#work" }, "Case Studies"),
+      ),
+      h(
+        "dl",
+        { className: "hero__stats", "aria-label": "Core services" },
+        [["Web", "Platforms and portals"], ["Mobile", "iOS and Android apps"], ["AI + Cloud", "Automation and infrastructure"]].map(([value, label]) =>
+          h("div", { key: label }, h("dt", null, value), h("dd", null, label)),
+        ),
       ),
     ),
     h("div", { className: "hero__media", "aria-hidden": "true" }),
@@ -837,6 +820,7 @@ function ServicesSection() {
     h(
       "div",
       { className: "section__head" },
+      h("p", { className: "eyebrow" }, "Services"),
       h("h2", { id: "services-title" }, "Digital systems built for scale"),
       h("p", null, "From the first product brief to production support, our team covers the technical layers that keep software dependable."),
     ),
@@ -867,6 +851,7 @@ function SolutionsSection() {
       h(
         "div",
         null,
+        h("p", { className: "eyebrow" }, "Solutions"),
         h("h2", { id: "solutions-title" }, "Product engineering with a practical operating model"),
         h("p", null, "We work best with founders and teams that need a focused technical partner: clear scope, weekly shipping rhythm, visible risk tracking, and maintainable architecture."),
         h(
@@ -948,7 +933,7 @@ function CaseStudiesSection() {
     h(
       "div",
       { className: "case-studies__top" },
-      h("div", { className: "case-studies__head" }, h("h2", { id: "work-title" }, "Selected builds and concepts")),
+      h("div", { className: "case-studies__head" }, h("p", { className: "eyebrow" }, "Case studies"), h("h2", { id: "work-title" }, "Selected builds and concepts")),
       h(
         "div",
         { className: "carousel-controls", role: "group", "aria-label": "Case study carousel controls" },
@@ -956,7 +941,6 @@ function CaseStudiesSection() {
         h("button", { type: "button", className: "carousel-button", "aria-label": "Next case study", "data-carousel-next": true, onClick: () => goToSlide(currentSlide + 1) }, h("span", { className: "carousel-button__icon carousel-button__icon--next", "aria-hidden": "true" })),
       ),
     ),
-    h("p", { className: "case-studies__note" }, "OrbitCart and FlowDesk are working builds by CyphronTech that are not yet live. The other case studies are illustrative concepts. None of them show real-world usage or client results."),
     h(
       "div",
       { className: "case-carousel", "data-carousel": true },
@@ -1269,12 +1253,12 @@ function FormStatus({ formStatus, emailDraftUrl }) {
 function SecurityOptIn() {
   return h(
     "div",
-    { className: "field" },
+    { className: "field field--optin" },
     h(
       "label",
       { className: "form-check" },
       h("input", { type: "checkbox", name: "security" }),
-      h("span", null, "Allow Google reCAPTCHA spam protection so this form can send. It loads scripts from Google and may set a cookie. Optional: you can email us instead. ", h("a", { href: "/cookie-policy", target: "_blank", rel: "noopener" }, "Cookie Policy", h(NewTabNote, null)), "."),
+      h("span", null, "Allow Google reCAPTCHA spam protection (uses a cookie). ", h("a", { href: "/cookie-policy", target: "_blank", rel: "noopener" }, "Cookie Policy", h(NewTabNote, null))),
     ),
   );
 }
@@ -1449,7 +1433,7 @@ function ServiceDetailPage({ service }) {
       h(
         "div",
         { className: "service-detail__intro" },
-        h("div", null, h("h2", null, service.introTitle), h("p", null, service.introText)),
+        h("div", null, h("p", { className: "eyebrow" }, "What we build"), h("h2", null, service.introTitle), h("p", null, service.introText)),
         h("ul", { className: "service-detail__list" }, service.builds.map(([title, text]) => h("li", { key: title }, h("strong", null, title), h("span", null, text)))),
       ),
       h(
@@ -1499,11 +1483,11 @@ function CaseDetailPage({ study }) {
       h(
         "div",
         { className: "case-detail__overview" },
-        h("div", null, h("h2", null, study.overviewTitle), study.overviewText.map((paragraph) => h("p", { key: paragraph }, paragraph))),
+        h("div", null, h("p", { className: "eyebrow" }, "Overview"), h("h2", null, study.overviewTitle), study.overviewText.map((paragraph) => h("p", { key: paragraph }, paragraph))),
         h("div", { className: "case-detail__image" }, h("img", { src: study.image, alt: study.alt, loading: "lazy", decoding: "async", ...imageProps(study.image) })),
       ),
       h(CaseBlocksSection, { title: "What the build focused on", blocks: study.focus }),
-      h(CaseBlocksSection, { title: study.scopeTitle, blocks: study.scope, four: true }),
+      h(CaseBlocksSection, { eyebrow: "Scope", title: study.scopeTitle, blocks: study.scope, four: true }),
       h(
         "div",
         { className: "case-detail__feature" },
@@ -1513,6 +1497,7 @@ function CaseDetailPage({ study }) {
       h(
         "div",
         { className: "case-detail__section" },
+        h("p", { className: "eyebrow" }, "Implementation direction"),
         h("h2", null, study.implementationTitle),
         h("p", null, study.implementationText),
         h("div", { className: "case-detail__stack", "aria-label": `${study.title} technology direction` }, study.stack.map((item) => h("span", { key: item }, item))),
@@ -1928,9 +1913,9 @@ function App() {
   usePageSetup(route);
   useEffect(() => startSmoothScroll(), []);
 
-  // Section photos load when the visitor scrolls near them, so they never compete with the hero.
+  // The Contact photo loads when the visitor scrolls near it, so it never competes with the hero.
   useEffect(() => {
-    const sections = document.querySelectorAll("#solutions, #process, #contact");
+    const sections = document.querySelectorAll("#contact");
     const show = (section) => section.classList.add("has-photo");
 
     if (!("IntersectionObserver" in window)) {

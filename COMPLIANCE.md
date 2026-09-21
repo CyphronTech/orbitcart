@@ -146,18 +146,8 @@ firebase deploy --only firestore:rules,hosting
   (kept at the owner's request; disclosed in the accessibility statement).
 - The pages, `sitemap.xml` and `404.html` are generated. Do not edit them by hand; edit `src/` and rebuild.
 
-## 11. UI upgrade (third pass)
+## 11. Look reverted to main (Tech Stack, FAQ, Contact, Footer kept)
 
-- One dark theme and one blue accent across every page; contrast re-checked (axe: 0 violations on all 19 pages).
-- Geist and Geist Mono replace Inter. Services use a bento layout; tech stack and process are plain rows; FAQ is a split layout.
-- Hero simplified: one message, one primary action, one quiet link; the stat row was removed.
-- Section labels reduced from every section to a few; nav highlights the section in view.
-- Scroll reveals, press and hover states, film grain; all off or static for reduced motion.
-- Playwright tests added (`npm test`).
-
-## 12. Light theme and "less template" pass
-
-- Light and dark themes: default follows the system setting; a header button overrides it. The override is stored as `cyphron_theme` in localStorage (disclosed in the Cookie Policy) and only when it differs from the system setting.
-- axe-core: 0 violations in both themes on all 18 pages. Text over photos was checked by calculation (worst case 4.7:1).
-- Removed common template tells: shadows, glass blur, glows, grain, card grids and the bento layout, check-mark bullets, animated arrows, hover lifts, scroll fade-ins, icon sets, pill shapes and the Inter/Geist font family. Copy that used "not X, it is Y" headings was rewritten.
-- Not fixable in code: the photos are AI-generated illustrations and mock-ups. Real screenshots of OrbitCart and FlowDesk would be the strongest single upgrade.
+- The visual redesign, light/dark theme and its switch were removed. The site is back to its original look, apart from the four kept sections. The whole upgraded design is preserved on branch `ui-upgrade` (commit `3f0c83d`).
+- Kept unchanged: consent notice, forms and legal pages, clean URLs, breadcrumbs and related links, pre-rendering, `llms.txt`, sitemap, tests and performance work.
+- axe-core: 0 violations on all 18 pages. The `cyphron_theme` storage item no longer exists, so the Cookie Policy lists only the cookie-choice item and reCAPTCHA.

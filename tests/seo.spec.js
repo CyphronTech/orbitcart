@@ -1,7 +1,6 @@
 // @ts-check
 // SEO, structure and link-health checks. Run with: npm test
 import { test, expect } from "@playwright/test";
-import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 
 const SITE = "https://cyphrontech.com";
@@ -164,19 +163,6 @@ test.describe("HTTPS", () => {
     expect(headers["Content-Security-Policy"]).toContain("upgrade-insecure-requests");
     expect(config.hosting.cleanUrls).toBe(true);
     expect(config.hosting.rewrites, "no catch-all rewrite (it would hide 404s)").toBeUndefined();
-  });
-});
-
-test.describe("Content Security Policy", () => {
-  test("the inline theme script is allowed by hash, so the CSP stays strict", async ({ request }) => {
-    const html = await (await request.get("/")).text();
-    const inline = html.match(/<script>([^]*?)<[/]script>/)?.[1] ?? "";
-    expect(inline.length, "inline theme script present").toBeGreaterThan(20);
-    const hash = `'sha256-${createHash("sha256").update(inline).digest("base64")}'`;
-    const config = JSON.parse(readFileSync("firebase.json", "utf8"));
-    const policy = config.hosting.headers[0].headers.find((/** @type {any} */ header) => header.key === "Content-Security-Policy").value;
-    expect(policy).toContain(hash);
-    expect(policy, "no blanket unsafe-inline").not.toContain("unsafe-inline");
   });
 });
 

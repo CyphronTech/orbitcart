@@ -55,7 +55,7 @@ The only build step is `npm run build`, which regenerates every `*.html` page (w
 │
 ├── assets/
 │   ├── vendor/                     # Vendored React bundle + licence
-│   ├── fonts/                      # Self-hosted IBM Plex Sans + Plex Mono (SIL OFL licence included)
+│   ├── fonts/                      # Self-hosted Inter + IBM Plex Mono (SIL OFL licences included)
 │   ├── firebase-config.js          # Live Firebase config (git-ignored in practice)
 │   ├── firebase-config.example.js  # Template for firebase-config.js
 │   ├── tech-logos/                 # Tech stack SVG icons
@@ -121,13 +121,9 @@ npm test
 
 Runs Playwright on desktop and phone sizes: every page loads with one h1 and no console errors, axe-core finds no accessibility violations, no sideways scrolling, cookie consent and form behaviour, keyboard and reduced-motion behaviour, and content rules (no em dashes, two-line hero).
 
-### Design system
+### Look
 
-Styles live in `styles.css`. The "Design v2" block defines the colour tokens and the "Design v3" block removes template-style decoration. Rules of thumb: light and dark palettes (the default follows the visitor's system setting; the header button overrides it and is remembered in `localStorage` as `cyphron_theme`), one blue accent, IBM Plex Sans and Plex Mono, a 6px/8px shape scale, hairlines instead of shadows, no glass or glows, lists instead of card grids. Keep the two light-palette blocks identical: `tests/theme.spec.js` checks it.
-
-Theme code: `assets/theme-init.js` (applies a saved choice before first paint), `src/theme.mjs`, `ThemeToggle` in `src/main.mjs`.
-
----
+Styles live in `styles.css`. The page uses its original look (Inter, blue accent, alternating light and dark sections). The Tech Stack, FAQ, Contact and Footer sections, plus the breadcrumbs, related links and current-section nav highlight, use the upgraded styles in the block at the end of the file ("Kept from the UI upgrade"). There is no light/dark switch. The full upgraded design (v2/v3, IBM Plex, light and dark themes) is saved on branch `ui-upgrade` (commit `3f0c83d`).
 
 ## Firebase / contact form setup
 

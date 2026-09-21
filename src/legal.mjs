@@ -137,7 +137,7 @@ const privacy = {
       id: "cookies",
       heading: "Cookies and similar technologies",
       body: [
-        "We use browser storage for your cookie choice (strictly necessary) and, only if you use the theme switch, your light or dark choice. If you allow it, we also use Google reCAPTCHA for spam protection. Details and controls are in our [Cookie Policy](/cookie-policy). You can change your choice at any time from “Cookie settings” in the footer.",
+        "We use one browser storage item that is strictly necessary (your cookie choice) and, only if you allow it, Google reCAPTCHA for spam protection. Details and controls are in our [Cookie Policy](/cookie-policy). You can change your choice at any time from “Cookie settings” in the footer.",
       ],
     },
     {
@@ -375,7 +375,6 @@ const cookies = {
             head: ["Name / provider", "Purpose", "Type", "Duration"],
             rows: [
               ["cyphron_consent_v1 (this site, browser storage)", "Remembers your cookie choice so we do not keep asking", "Strictly necessary", "Up to 12 months"],
-              ["cyphron_theme (this site, browser storage)", "Remembers your light or dark choice. Saved only if you use the theme switch and pick something other than your system setting", "Preference you asked for", "Until you switch back or clear site data"],
               ["Google reCAPTCHA via Firebase App Check (Google LLC)", "Spam and abuse protection when you send a form. Google may set a cookie such as _GRECAPTCHA on google.com and App Check may keep a token in your browser's IndexedDB", "Optional: loaded only if you allow it, and only when you send a form", "Up to 6 months"],
             ],
           },

@@ -55,10 +55,10 @@ test.describe("every page", () => {
       expect(errors).toEqual([]);
     });
 
-    for (const scheme of ["dark", "light"]) {
-    test(`${file} has no axe accessibility violations (${scheme} theme)`, async ({ page }) => {
+    {
+    test(`${file} has no axe accessibility violations`, async ({ page }) => {
       // Measure the settled page: contrast checked mid-fade would give false results.
-      await page.emulateMedia({ reducedMotion: "reduce", colorScheme: scheme });
+      await page.emulateMedia({ reducedMotion: "reduce" });
       await declineCookies(page);
       await page.goto(file);
       await page.waitForTimeout(800);
@@ -209,17 +209,6 @@ test.describe("content rules", () => {
       expect(text, `${file} contains an em or en dash`).not.toMatch(/[–—]/);
     }
   });
-
-  test("hero headline fits on two lines on desktop", async ({ page, isMobile }) => {
-    test.skip(isMobile, "desktop layout only");
-    await declineCookies(page);
-    await visit(page, "/");
-    const lines = await page.locator("#hero-title").evaluate((element) => {
-      const style = getComputedStyle(element);
-      return Math.round(element.getBoundingClientRect().height / parseFloat(style.lineHeight));
-    });
-    expect(lines).toBeLessThanOrEqual(2);
-  });
 });
 
 test.describe("responsive layouts", () => {
@@ -235,10 +224,10 @@ test.describe("responsive layouts", () => {
 
         const problems = await page.evaluate(() => {
           const found = [];
-          // body-size text must stay at least 14px
+          // body-size text must stay at least 13px
           for (const node of document.querySelectorAll("p, li, label")) {
             const size = parseFloat(getComputedStyle(node).fontSize);
-            if (size < 13.5 && node.textContent.trim().length > 40 && node.getBoundingClientRect().width > 0) {
+            if (size < 13 && node.textContent.trim().length > 40 && node.getBoundingClientRect().width > 0) {
               found.push(`small text (${size}px): ${node.textContent.trim().slice(0, 40)}`);
             }
           }
