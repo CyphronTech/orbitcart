@@ -13,7 +13,7 @@ export const SITE = {
 
   email: "cyphrontechllp@gmail.com",
   phone: "+918275257252",
-  phoneDisplay: "+91 82752 57252",
+  phoneDisplay: "+91\u00a082752\u00a057252",
   linkedin: "https://www.linkedin.com/company/cyphron-tech",
   linkedinDisplay: "linkedin.com/company/cyphron-tech",
 
@@ -41,3 +41,7 @@ export const PRIVACY_REQUEST_TYPES = [
   "Withdraw my consent",
   "Complaint or other privacy question",
 ];
+
+// Public path of a generated page: "web-development.html" is served at "/web-development".
+export const pagePath = (file) => (file === "index.html" ? "/" : `/${file.replace(/\.html$/, "")}`);
+export const pageUrl = (file) => `${SITE.url}${pagePath(file) === "/" ? "/" : pagePath(file)}`;

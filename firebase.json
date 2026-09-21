@@ -12,7 +12,13 @@
       "package.json",
       "package-lock.json",
       "scripts/**",
-      ".build/**"
+      ".build/**",
+      "tests/**",
+      "playwright.config.js",
+      "test-results/**",
+      "playwright-report/**",
+      ".agents/**",
+      "skills-lock.json"
     ],
     "headers": [
       {
@@ -20,7 +26,7 @@
         "headers": [
           {
             "key": "Content-Security-Policy",
-            "value": "default-src 'self'; script-src 'self' https://www.gstatic.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; connect-src 'self' https://*.googleapis.com https://firestore.googleapis.com https://firebaseappcheck.googleapis.com https://*.firebaseio.com; img-src 'self' data:; style-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src https://www.google.com/recaptcha/ https://recaptcha.google.com/recaptcha/; frame-ancestors 'none'; upgrade-insecure-requests"
+            "value": "default-src 'self'; script-src 'self' 'sha256-CaZ60A1Av8jeGLmahywbONPwzOKDIZ/q/U4eFnD8r5E=' https://www.gstatic.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; connect-src 'self' https://*.googleapis.com https://firestore.googleapis.com https://firebaseappcheck.googleapis.com https://*.firebaseio.com; img-src 'self' data:; style-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src https://www.google.com/recaptcha/ https://recaptcha.google.com/recaptcha/; frame-ancestors 'none'; upgrade-insecure-requests"
           },
           {
             "key": "Strict-Transport-Security",
@@ -53,7 +59,9 @@
           }
         ]
       }
-    ]
+    ],
+    "cleanUrls": true,
+    "trailingSlash": false
   },
   "firestore": {
     "rules": "firestore.rules"

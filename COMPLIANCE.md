@@ -137,7 +137,7 @@ firebase deploy --only firestore:rules,hosting
   and JSON-LD (Organization and WebSite on the home page, breadcrumbs and Service on inner pages).
 - The home page H1 is now "Custom software, mobile apps, and AI automation".
 - Unknown URLs return a real 404 (`404.html`, `noindex`); the catch-all rewrite was removed.
-- Images converted to WebP (2.9 MB down to 0.45 MB) with width and height set. Inter is self-hosted.
+- Images converted to WebP (2.9 MB down to 0.45 MB) with width and height set. Geist and Geist Mono are self-hosted.
 - "Explore service" and "View Case Study" links carry hidden text naming their target; new-tab links say so to screen readers.
 - Forms show inline, screen-reader-linked errors instead of browser pop-ups.
 - Accessibility statement page and print styles added. "Data Products" now has its own page.
@@ -145,3 +145,19 @@ firebase deploy --only firestore:rules,hosting
   sections, so it needs a proper redesign and contrast re-audit), and removal of carousel auto-rotation
   (kept at the owner's request; disclosed in the accessibility statement).
 - The pages, `sitemap.xml` and `404.html` are generated. Do not edit them by hand; edit `src/` and rebuild.
+
+## 11. UI upgrade (third pass)
+
+- One dark theme and one blue accent across every page; contrast re-checked (axe: 0 violations on all 19 pages).
+- Geist and Geist Mono replace Inter. Services use a bento layout; tech stack and process are plain rows; FAQ is a split layout.
+- Hero simplified: one message, one primary action, one quiet link; the stat row was removed.
+- Section labels reduced from every section to a few; nav highlights the section in view.
+- Scroll reveals, press and hover states, film grain; all off or static for reduced motion.
+- Playwright tests added (`npm test`).
+
+## 12. Light theme and "less template" pass
+
+- Light and dark themes: default follows the system setting; a header button overrides it. The override is stored as `cyphron_theme` in localStorage (disclosed in the Cookie Policy) and only when it differs from the system setting.
+- axe-core: 0 violations in both themes on all 18 pages. Text over photos was checked by calculation (worst case 4.7:1).
+- Removed common template tells: shadows, glass blur, glows, grain, card grids and the bento layout, check-mark bullets, animated arrows, hover lifts, scroll fade-ins, icon sets, pill shapes and the Inter/Geist font family. Copy that used "not X, it is Y" headings was rewritten.
+- Not fixable in code: the photos are AI-generated illustrations and mock-ups. Real screenshots of OrbitCart and FlowDesk would be the strongest single upgrade.

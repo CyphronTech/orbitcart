@@ -4,10 +4,11 @@
 //
 // Usage:  npm install   (once)   then   npm run build
 //
-// Generates: every *.html page, 404.html, sitemap.xml
+// Generates: every *.html page, 404.html, sitemap.xml, robots.txt, llms.txt
 
 import { build } from "esbuild";
-import { mkdirSync, writeFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
@@ -16,13 +17,31 @@ const root = path.resolve(scriptsDir, "..");
 const buildDir = path.join(root, ".build");
 const shimPath = path.join(scriptsDir, "react-shim.mjs");
 
-const { SITE } = await import(pathToFileURL(path.join(root, "src/site-config.mjs")).href);
+const { SITE, pageUrl } = await import(pathToFileURL(path.join(root, "src/site-config.mjs")).href);
 const { legalPages } = await import(pathToFileURL(path.join(root, "src/legal.mjs")).href);
 
 // Cache-busting token for CSS/JS query strings. Bump when assets change.
-const ASSET_VERSION = "small-1";
+const ASSET_VERSION = "calm-7";
 const OG_IMAGE = "assets/og-image.jpg";
-const FONT = "assets/fonts/inter-latin-wght-normal.woff2";
+const FONT = "assets/fonts/ibm-plex-sans-latin-wght-normal.woff2";
+
+// The theme script runs inline (no extra request before first paint). The CSP allows exactly this
+// script by hash, and the hash is written into firebase.json so the two cannot drift apart.
+const NL = String.fromCharCode(10);
+const themeInit = readFileSync(path.join(scriptsDir, "../assets/theme-init.js"), "utf8")
+  .split(NL)
+  .filter((line) => !line.startsWith("//"))
+  .join(NL)
+  .trim();
+const themeHash = `'sha256-${createHash("sha256").update(themeInit).digest("base64")}'`;
+const firebasePath = path.join(root, "firebase.json");
+const firebase = JSON.parse(readFileSync(firebasePath, "utf8"));
+const csp = firebase.hosting.headers[0].headers.find((header) => header.key === "Content-Security-Policy");
+const updatedCsp = csp.value.replace(/script-src 'self'( 'sha256-[^']+')?/, `script-src 'self' ${themeHash}`);
+if (updatedCsp !== csp.value) {
+  csp.value = updatedCsp;
+  writeFileSync(firebasePath, JSON.stringify(firebase, null, 2) + NL, "utf8");
+}
 
 mkdirSync(buildDir, { recursive: true });
 
@@ -63,7 +82,7 @@ await build({
 });
 
 const ssr = await import(pathToFileURL(path.join(buildDir, "ssr.mjs")).href + `?t=${Date.now()}`);
-const { App, React, renderToString, getRoute, services, caseStudies } = ssr;
+const { App, React, renderToString, getRoute, services, caseStudies, faqs } = ssr;
 
 // --- Page list ---------------------------------------------------------------
 const pages = [
@@ -77,7 +96,6 @@ const pages = [
 
 // --- Helpers -----------------------------------------------------------------
 const esc = (value) => String(value).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-const pageUrl = (file) => `${SITE.url}/${file === "index.html" ? "" : file}`;
 const jsonLd = (data) => `<script type="application/ld+json">${JSON.stringify(data).replace(/</g, "\\u003c")}</script>`;
 
 const organization = () => ({
@@ -93,40 +111,46 @@ const organization = () => ({
   ...(SITE.registeredAddress ? { address: { "@type": "PostalAddress", streetAddress: SITE.registeredAddress } } : {}),
 });
 
-function structuredData(page, title) {
+function structuredData(page, title, description) {
+  if (page.kind === "not-found") {
+    return "";
+  }
+
+  const url = pageUrl(page.file);
+  const siteRef = { "@id": `${SITE.url}/#website` };
+  const orgRef = { "@id": `${SITE.url}/#organization` };
+
   if (page.kind === "home") {
     return jsonLd({
       "@context": "https://schema.org",
       "@graph": [
         organization(),
-        { "@type": "WebSite", "@id": `${SITE.url}/#website`, url: SITE.url, name: SITE.brand, publisher: { "@id": `${SITE.url}/#organization` } },
+        { "@type": "WebSite", "@id": `${SITE.url}/#website`, url: `${SITE.url}/`, name: SITE.brand, publisher: orgRef, inLanguage: "en" },
+        { "@type": "WebPage", "@id": `${url}#webpage`, url, name: title, description, isPartOf: siteRef, about: orgRef, inLanguage: "en" },
+        {
+          "@type": "FAQPage",
+          "@id": `${url}#faq`,
+          mainEntity: faqs.map(([question, answer]) => ({ "@type": "Question", name: question, acceptedAnswer: { "@type": "Answer", text: answer } })),
+        },
       ],
     });
   }
 
-  if (page.kind === "not-found") {
-    return "";
-  }
-
-  const crumbTitle = page.service?.title || page.study?.title || page.page?.title || title.split("|")[0].trim();
+  const crumbTitle = page.service?.title || page.study?.title.split(":")[0] || page.page?.title || title.split("|")[0].trim();
   const graph = [
+    { "@type": "WebPage", "@id": `${url}#webpage`, url, name: title, description, isPartOf: siteRef, breadcrumb: { "@id": `${url}#breadcrumb` }, inLanguage: "en" },
     {
       "@type": "BreadcrumbList",
+      "@id": `${url}#breadcrumb`,
       itemListElement: [
-        { "@type": "ListItem", position: 1, name: SITE.brand, item: `${SITE.url}/` },
-        { "@type": "ListItem", position: 2, name: crumbTitle, item: pageUrl(page.file) },
+        { "@type": "ListItem", position: 1, name: "Home", item: `${SITE.url}/` },
+        { "@type": "ListItem", position: 2, name: crumbTitle, item: url },
       ],
     },
   ];
 
   if (page.service) {
-    graph.push({
-      "@type": "Service",
-      name: page.service.title,
-      description: page.service.detailLead,
-      url: pageUrl(page.file),
-      provider: { "@id": `${SITE.url}/#organization` },
-    });
+    graph.push({ "@type": "Service", "@id": `${url}#service`, name: page.service.title, description: page.service.detailLead, url, provider: orgRef, serviceType: page.service.eyebrow });
   }
 
   return jsonLd({ "@context": "https://schema.org", "@graph": graph });
@@ -147,7 +171,8 @@ function renderPage(page) {
     isNotFound ? '<base href="/">' : "",
     `<title>${esc(title)}</title>`,
     `<meta name="description" content="${esc(description)}">`,
-    '<meta name="theme-color" content="#0e1115">',
+    '<meta name="theme-color" content="#090d15" media="(prefers-color-scheme: dark)">',
+    '<meta name="theme-color" content="#f1f3f6" media="(prefers-color-scheme: light)">',
     isNotFound ? '<meta name="robots" content="noindex">' : `<link rel="canonical" href="${url}">`,
     isNotFound
       ? ""
@@ -166,11 +191,12 @@ function renderPage(page) {
           `<meta name="twitter:description" content="${esc(description)}">`,
           `<meta name="twitter:image" content="${SITE.url}/${OG_IMAGE}">`,
         ].join("\n    "),
-    '<link rel="icon" href="assets/logo-mark.png?v=logo-favicon" type="image/png">',
-    '<link rel="apple-touch-icon" href="assets/logo-mark.png?v=logo-favicon">',
-    `<link rel="preload" href="${FONT}" as="font" type="font/woff2" crossorigin>`,
-    `<link rel="stylesheet" href="styles.css?v=${ASSET_VERSION}">`,
-    structuredData(page, title),
+    '<link rel="icon" href="/assets/logo-mark.png?v=seo-5" type="image/png">',
+    '<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">',
+    `<script>${themeInit}</script>`,
+    `<link rel="stylesheet" href="/styles.css?v=${ASSET_VERSION}">`,
+    `<link rel="preload" href="/${FONT}" as="font" type="font/woff2" crossorigin>`,
+    structuredData(page, title, description),
   ]
     .filter(Boolean)
     .join("\n    ");
@@ -185,7 +211,7 @@ function renderPage(page) {
     <noscript>
       <p class="noscript-notice">Some parts of this website, such as the contact form and the cookie choices, need JavaScript. You can still reach ${esc(SITE.legalName)} at <a href="mailto:${SITE.email}">${SITE.email}</a> or on <a href="tel:${SITE.phone}">${SITE.phoneDisplay}</a>.</p>
     </noscript>
-    <script type="module" src="src/main.mjs?v=${ASSET_VERSION}"></script>
+    <script type="module" src="/src/main.mjs?v=${ASSET_VERSION}"></script>
   </body>
 </html>
 `;
@@ -200,15 +226,46 @@ for (const page of pages) {
 }
 
 const today = new Date().toISOString().slice(0, 10);
-const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${pages
-  .filter((page) => page.kind !== "not-found")
-  .map((page) => `  <url><loc>${pageUrl(page.file)}</loc><lastmod>${today}</lastmod></url>`)
-  .join("\n")}
-</urlset>
-`;
-writeFileSync(path.join(root, "sitemap.xml"), sitemap, "utf8");
+const indexable = pages.filter((page) => page.kind !== "not-found");
 
-console.log(`Built ${built.length} pages + sitemap.xml`);
+writeFileSync(
+  path.join(root, "sitemap.xml"),
+  `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${indexable.map((page) => `  <url><loc>${pageUrl(page.file)}</loc><lastmod>${today}</lastmod></url>`).join("\n")}
+</urlset>
+`,
+  "utf8",
+);
+
+writeFileSync(path.join(root, "robots.txt"), `User-agent: *\nAllow: /\n\nSitemap: ${SITE.url}/sitemap.xml\n`, "utf8");
+
+// llms.txt: a plain-language map of the site for AI assistants (see llmstxt.org).
+const line = (label, file, note) => `- [${label}](${pageUrl(file)}): ${note}`;
+const llms = [
+  `# ${SITE.brand}`,
+  "",
+  `> ${SITE.brand} (${SITE.legalName}) is a software development agency that designs and builds web platforms, mobile apps, AI automation, cloud systems, data products and UI/UX design for growing teams.`,
+  "",
+  "## Services",
+  ...services.map((service) => line(service.title, service.file, service.summary)),
+  "",
+  "## Case studies",
+  "OrbitCart and FlowDesk are working builds that are not yet live. The other case studies are illustrative concepts. None show client results.",
+  ...caseStudies.map((study) => line(study.title, study.file, `${study.isBuild ? "Working build" : "Concept"}. ${study.detailLead}`)),
+  "",
+  "## Company and policies",
+  ...Object.values(legalPages).map((entry) => line(entry.title, entry.file, entry.description)),
+  line("Privacy and data requests", "privacy-request.html", "Ask for a copy, correction or deletion of your data, or withdraw consent."),
+  "",
+  "## Contact",
+  `- Email: ${SITE.email}`,
+  `- Phone: ${SITE.phoneDisplay.replace(/\u00a0/g, " ")}`,
+  `- LinkedIn: ${SITE.linkedin}`,
+  `- Website: ${SITE.url}/`,
+  "",
+].join("\n");
+writeFileSync(path.join(root, "llms.txt"), llms, "utf8");
+
+console.log(`Built ${built.length} pages + sitemap.xml, robots.txt, llms.txt`);
 console.log(built.join("\n"));
