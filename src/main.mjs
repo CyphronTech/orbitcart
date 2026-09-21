@@ -1,8 +1,8 @@
-import React, { useEffect, useMemo, useRef, useState, createRoot } from "../assets/vendor/react-bundle.mjs?v=react-18.3.1";
+import React, { useEffect, useMemo, useRef, useState, createRoot, hydrateRoot } from "../assets/vendor/react-bundle.mjs?v=react-18.3.1-h";
 import "../assets/firebase-config.js?v=appcheck-v3";
-import { SITE, PRIVACY_REQUEST_TYPES } from "./site-config.mjs?v=small-1";
-import { CONSENT_OPEN_EVENT, openConsentSettings, readConsent, saveConsent, subscribeConsent } from "./consent.mjs?v=small-1";
-import { legalByFile, legalLinks } from "./legal.mjs?v=small-1";
+import { SITE, PRIVACY_REQUEST_TYPES, pagePath } from "./site-config.mjs?v=revert-4";
+import { CONSENT_OPEN_EVENT, openConsentSettings, readConsent, saveConsent, subscribeConsent } from "./consent.mjs?v=revert-4";
+import { legalByFile, legalLinks } from "./legal.mjs?v=revert-4";
 
 const h = React.createElement;
 const SITE_EMAIL = SITE.email;
@@ -49,10 +49,6 @@ const IMAGE_SIZES = {
   "assets/hero-background.webp": [
     1672,
     941
-  ],
-  "assets/hero-laptop.webp": [
-    380,
-    520
   ],
   "assets/service-cloud-engineering.webp": [
     960,
@@ -148,7 +144,7 @@ const services = [
       ["App Engineering", "Cross-platform development, secure API calls, offline states, and device-aware details."],
       ["Launch Support", "Testing, store preparation, analytics, release checks, and iteration planning."],
     ],
-    outcomeTitle: "Apps built for adoption, not just installation.",
+    outcomeTitle: "Apps people keep using after they install them.",
     outcomeText: "We focus on mobile experiences people can understand quickly, use repeatedly, and trust with important workflows.",
     outcomes: [
       ["Usable", "Clear flows, states, and feedback across screen sizes."],
@@ -168,7 +164,7 @@ const services = [
     detailLead: "We build automation, copilots, dashboards, and workflow tools that help teams move faster without adding fragile buzzword features.",
     cta: "Start an AI Project",
     heroClass: "service-detail-hero--ai",
-    introTitle: "AI built for business, not buzzwords.",
+    introTitle: "AI where it saves real work.",
     introText: "We use AI where it improves speed, quality, visibility, or consistency: support triage, report generation, knowledge retrieval, data review, and product workflow assistance.",
     builds: [
       ["Workflow automation", "AI summaries, routing, approvals, quality checks, and triggers across business systems."],
@@ -212,7 +208,7 @@ const services = [
       ["Automation", "Set up deployment workflows that reduce manual work and release risk."],
       ["Visibility", "Instrument systems with metrics, alerts, logs, and practical operational dashboards."],
     ],
-    outcomeTitle: "Cloud that does not become a mystery box.",
+    outcomeTitle: "Cloud your team can understand and run.",
     outcomeText: "We document how the system works, what to monitor, and how your team can maintain it after launch.",
     outcomes: [
       ["Reliable", "Repeatable infrastructure and fewer manual release steps."],
@@ -301,7 +297,7 @@ const caseStudies = [
     overviewTitle: "Shared commerce visibility for sales and warehouse teams.",
     overviewText: [
       "OrbitCart was shaped around the daily tension between stock availability, supplier updates, and fulfillment decisions. The product gives teams a single operating surface for order health, inventory movement, and next-best reorder actions.",
-      "The AI layer is practical: it helps surface reorder timing, supplier risk, and fulfillment priorities instead of acting as a generic chatbot.",
+      "The AI layer surfaces reorder timing, supplier risk, and fulfillment priorities for managers to review.",
     ],
     focus: [
       ["Challenge", "Disconnected stock decisions", "Sales, warehouse, and supplier teams needed clearer visibility into order risk, stock movement, and communication history."],
@@ -315,15 +311,15 @@ const caseStudies = [
       ["03", "Supplier context", "Messaging, purchase updates, and expected delivery dates sit beside the products they affect."],
       ["04", "Admin controls", "Managers can adjust reorder rules, review exceptions, and keep product data consistent across the operation."],
     ],
-    aiTitle: "AI built around reorder decisions, not generic chat.",
+    aiTitle: "AI that supports reorder decisions.",
     aiText: "The AI layer is designed to explain why a product needs attention. It combines sales velocity, available stock, supplier lead time, and fulfillment pressure into practical recommendations that a manager can approve.",
     aiItems: [
       ["Demand signals", "Highlights products moving faster than the current replenishment plan."],
       ["Supplier risk", "Flags vendors with delayed updates or longer-than-usual lead times."],
       ["Fulfillment priority", "Ranks the orders most likely to affect customer commitments."],
-      ["Human approval", "Keeps reorder decisions reviewable instead of silently changing inventory plans."],
+      ["Human approval", "Reorder decisions stay reviewable and are never changed silently."],
     ],
-    implementationTitle: "Built as a durable product system, not a one-off dashboard.",
+    implementationTitle: "A product system designed to last.",
     implementationText: "The product direction covers API design, mobile state management, inventory data modeling, audit-friendly admin actions, and a clean handoff path for future integrations with ERP or accounting tools.",
     stack: ["React Native", "Node.js", "PostgreSQL", "OpenAI", "AWS", "Stripe"],
     ctaTitle: "Need an AI-ready commerce workflow?",
@@ -387,7 +383,7 @@ const caseStudies = [
       "The AI layer supports intake triage, summary drafting, priority signals, and routing suggestions while teams remain in control of approvals.",
     ],
     focus: [
-      ["Challenge", "Fragmented work queues", "Teams needed to see intake, support, billing, and status reporting in one place instead of chasing updates across tools."],
+      ["Challenge", "Fragmented work queues", "Teams needed to see intake, support, billing, and status reporting in one place."],
       ["Solution", "AI-assisted operations hub", "The product brings routing, alerts, approvals, CRM context, dashboards, and AI triage into a single control surface."],
       ["Intended outcome", "Less manual coordination", "Managers can spot bottlenecks faster, teams can act from one queue, and leadership gets clearer operational visibility."],
     ],
@@ -399,7 +395,7 @@ const caseStudies = [
       ["04", "Executive reporting", "Leadership dashboards summarize throughput, bottlenecks, revenue events, and service quality signals."],
     ],
     aiTitle: "AI that helps service teams route work faster.",
-    aiText: "The AI layer reads intake context, support notes, and client history to recommend routing, draft summaries, and flag work at risk. It gives operators a better first pass without hiding the decision trail.",
+    aiText: "The AI layer reads intake context, support notes, and client history to recommend routing, draft summaries, and flag work at risk. It gives operators a first pass and keeps the decision trail visible.",
     aiItems: [
       ["Intake triage", "Classifies incoming requests by urgency, department, client, and workflow type."],
       ["Summary drafting", "Turns long conversations into short handoff notes for internal teams."],
@@ -481,7 +477,7 @@ const caseStudies = [
       ["04", "Alert rules", "Teams can define thresholds, anomaly triggers, and ownership for follow-up when metrics shift."],
     ],
     aiTitle: "AI that explains business signals in plain language.",
-    aiText: "The AI layer helps leaders understand what changed, why it may matter, and which data points deserve attention. It supports decision review instead of replacing the dashboard with vague generated text.",
+    aiText: "The AI layer helps leaders understand what changed, why it may matter, and which data points deserve attention. It supports decision review alongside the dashboard.",
     aiItems: [
       ["Anomaly explanations", "Surfaces likely drivers behind unusual revenue, churn, or support patterns."],
       ["Report drafting", "Creates concise weekly summaries that finance teams can edit and send."],
@@ -495,6 +491,27 @@ const caseStudies = [
     ctaText: "We can build secure dashboards, reporting pipelines, and practical AI insights around your business data.",
   },
 ];
+
+// Which case studies used which services. Drives the "related" links on service and case pages.
+const caseServices = {
+  orbitcart: ["mobile", "ai", "cloud"],
+  leaselens: ["mobile", "ai"],
+  flowdesk: ["web", "ai"],
+  medsync: ["web", "mobile", "ux"],
+  finsight: ["data", "cloud", "ai"],
+};
+
+const casesForService = (slug) => caseStudies.filter((study) => caseServices[study.slug]?.includes(slug));
+const servicesForCase = (slug) => services.filter((service) => caseServices[slug]?.includes(service.slug));
+
+const clip = (text, max = 155) => {
+  if (text.length <= max) {
+    return text;
+  }
+
+  const cut = text.slice(0, max - 1);
+  return `${cut.slice(0, cut.lastIndexOf(" ")).replace(/[,;:]$/, "")}\u2026`;
+};
 
 const techGroups = [
   ["Frontend", [["tech-react.svg", "React"], ["tech-nextjs.svg", "Next.js"], ["tech-typescript.svg", "TypeScript"], ["tech-tailwindcss.svg", "Tailwind CSS"]]],
@@ -528,7 +545,8 @@ function currentFile() {
     return globalThis.__SSR_FILE__ || "index.html";
   }
 
-  return window.location.pathname.split("/").filter(Boolean).pop() || "index.html";
+  const last = window.location.pathname.split("/").filter(Boolean).pop();
+  return !last ? "index.html" : last.endsWith(".html") ? last : `${last}.html`;
 }
 
 function getRoute() {
@@ -545,7 +563,7 @@ function getRoute() {
       service,
       meta: {
         title: servicePageTitles[service.slug],
-        description: service.detailLead,
+        description: clip(service.detailLead),
       },
     };
   }
@@ -564,7 +582,7 @@ function getRoute() {
       type: "privacy-request",
       meta: {
         title: "Privacy and Data Requests | CyphronTech",
-        description: "Ask CyphronTech for a copy of your data, a correction, deletion, or to withdraw your consent.",
+        description: "Ask CyphronTech for a copy of your data, to correct or delete it, or to withdraw your consent. We reply within 30 days and charge no fee for reasonable requests.",
       },
     };
   }
@@ -575,8 +593,8 @@ function getRoute() {
       type: "case",
       study,
       meta: {
-        title: `${study.title} Case Study | CyphronTech`,
-        description: study.detailLead,
+        title: `${study.title} | CyphronTech`,
+        description: clip(study.detailLead),
       },
     };
   }
@@ -623,20 +641,20 @@ function Brand({ footer = false }) {
     "a",
     {
       className: cx("brand", footer && "brand--footer"),
-      href: "index.html#top",
+      href: "/#top",
       "aria-label": "CyphronTech home",
     },
     h("img", { src: "assets/logo-mark-small.png", alt: "", width: 39, height: 33, className: "brand__mark" }),
-    h("span", { className: "brand__name" }, "Cyphron", h("span", null, "Tech")),
+    h("span", { className: "brand__name", translate: "no" }, "Cyphron", h("span", null, "Tech")),
   );
 }
 
 function Header({ route }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [activeId, setActiveId] = useState("");
   const toggleRef = useRef(null);
   const onHome = route.type === "home";
-  const linkPrefix = onHome ? "" : "index.html";
+  const linkPrefix = onHome ? "" : "/";
   const links = [
     ["Services", "#services"],
     ["Solutions", "#solutions"],
@@ -649,11 +667,25 @@ function Header({ route }) {
   ];
 
   useEffect(() => {
-    const updateHeader = () => setIsScrolled(window.scrollY > 10);
-    updateHeader();
-    window.addEventListener("scroll", updateHeader, { passive: true });
-    return () => window.removeEventListener("scroll", updateHeader);
-  }, []);
+    if (!onHome || !("IntersectionObserver" in window)) {
+      return undefined;
+    }
+
+    // Mark the nav link for the section crossing the middle of the screen.
+    const targets = ["top", ...links.map(([, href]) => href.slice(1))].map((id) => document.getElementById(id)).filter(Boolean);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveId(entry.target.id === "top" ? "" : entry.target.id);
+          }
+        });
+      },
+      { rootMargin: "-35% 0px -55% 0px" },
+    );
+    targets.forEach((target) => observer.observe(target));
+    return () => observer.disconnect();
+  }, [onHome]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -673,7 +705,7 @@ function Header({ route }) {
 
   return h(
     "header",
-    { className: cx("site-header", isScrolled && "is-scrolled"), "data-header": true },
+    { className: "site-header", "data-header": true },
     h(
       "nav",
       { className: "nav", "aria-label": "Primary navigation" },
@@ -695,7 +727,7 @@ function Header({ route }) {
       h(
         "div",
         { className: cx("nav-menu", isOpen && "is-open"), id: "primary-menu", "data-menu": true },
-        links.map(([label, href]) => h("a", { key: href, href: `${linkPrefix}${href}`, onClick: () => setIsOpen(false) }, label)),
+        links.map(([label, href]) => h("a", { key: href, href: `${linkPrefix}${href}`, "aria-current": onHome && activeId === href.slice(1) ? "location" : undefined, onClick: () => setIsOpen(false) }, label)),
       ),
     ),
   );
@@ -802,7 +834,7 @@ function ServicesSection() {
           h("img", { className: "service-card__image", src: service.image, alt: service.alt, loading: "lazy", decoding: "async", ...imageProps(service.image) }),
           h("h3", null, service.title),
           h("p", null, service.summary),
-          service.file ? h("a", { className: "service-card__link", href: service.file }, "Explore service", h("span", { className: "sr-only" }, `: ${service.title}`)) : null,
+          service.file ? h("a", { className: "service-card__link", href: pagePath(service.file) }, "Explore service", h("span", { className: "sr-only" }, `: ${service.title}`)) : null,
         ),
       ),
     ),
@@ -861,8 +893,8 @@ function AiApproachSection() {
         "div",
         { className: "ai-approach__copy" },
         h("p", { className: "eyebrow" }, "AI-first approach"),
-        h("h2", { id: "ai-approach-title" }, "AI That Solves Real Problems"),
-        h("p", { className: "ai-approach__statement" }, "AI Built for Business, Not Buzzwords."),
+        h("h2", { id: "ai-approach-title" }, "Where we use AI"),
+        h("p", { className: "ai-approach__statement" }, "We add AI to a workflow only when it clearly helps."),
         h("p", null, "CyphronTech uses AI where it improves a real workflow: reducing manual review, making operational data easier to read, helping teams respond faster, and turning product interactions into smarter experiences."),
       ),
       h(
@@ -901,7 +933,7 @@ function CaseStudiesSection() {
     h(
       "div",
       { className: "case-studies__top" },
-      h("div", { className: "case-studies__head" }, h("p", { className: "eyebrow" }, "Case studies"), h("h2", { id: "work-title" }, "AI-ready builds for modern digital teams")),
+      h("div", { className: "case-studies__head" }, h("p", { className: "eyebrow" }, "Case studies"), h("h2", { id: "work-title" }, "Selected builds and concepts")),
       h(
         "div",
         { className: "carousel-controls", role: "group", "aria-label": "Case study carousel controls" },
@@ -909,7 +941,6 @@ function CaseStudiesSection() {
         h("button", { type: "button", className: "carousel-button", "aria-label": "Next case study", "data-carousel-next": true, onClick: () => goToSlide(currentSlide + 1) }, h("span", { className: "carousel-button__icon carousel-button__icon--next", "aria-hidden": "true" })),
       ),
     ),
-    h("p", { className: "case-studies__note" }, "OrbitCart and FlowDesk are working builds by CyphronTech that are not yet live. The other case studies are illustrative concepts. None of them show real-world usage or client results."),
     h(
       "div",
       { className: "case-carousel", "data-carousel": true },
@@ -931,7 +962,7 @@ function CaseStudiesSection() {
                 { className: "case-metrics", role: "group", "aria-label": `${study.title} project details` },
                 study.metrics.map(([label, value]) => h("span", { key: label }, h("strong", null, label), " ", value)),
               ),
-              h("a", { className: "case-cta", href: study.file, tabIndex: active ? undefined : -1 }, "View Case Study", h("span", { className: "sr-only" }, `: ${study.title}`)),
+              h("a", { className: "case-cta", href: pagePath(study.file), tabIndex: active ? undefined : -1 }, "View Case Study", h("span", { className: "sr-only" }, `: ${study.title}`)),
             ),
             h("div", { className: "case-card__visual" }, h("img", { className: "case-card__mockup", src: study.image, alt: study.alt, loading: "lazy", decoding: "async", ...imageProps(study.image) })),
           );
@@ -962,7 +993,6 @@ function TechStackSection() {
     h(
       "div",
       { className: "section__head" },
-      h("p", { className: "eyebrow" }, "Tech stack"),
       h("h2", { id: "tech-stack-title" }, "Tools selected for stable, scalable delivery"),
       h("p", null, "We choose familiar, maintainable technologies that make products easier to ship, operate, and hand over."),
     ),
@@ -998,24 +1028,24 @@ function ProcessSection() {
     { className: "section section--white", id: "process", "aria-labelledby": "process-title" },
     h("div", { className: "section__head" }, h("p", { className: "eyebrow" }, "Process"), h("h2", { id: "process-title" }, "A tighter path from idea to launch"), h("p", null, "Every engagement is structured around visible decisions, measurable delivery, practical AI opportunities, and code that can be owned by your team.")),
     h("div", { className: "timeline" }, steps.map(([className, title, text]) => h("article", { className: cx("timeline__card", className), key: title }, h("h3", null, title), h("p", null, text)))),
-    h("div", { className: "visual-language" }, h("img", { src: "assets/visual-language.webp", ...imageProps("assets/visual-language.webp"), alt: "Technical visual language showing architecture, code, and interface references", loading: "lazy", decoding: "async" }), h("p", null, "Clean, modern, technical, human. The brand system balances precision with trust so the site feels credible without becoming cold.")),
+    h("div", { className: "visual-language" }, h("img", { src: "assets/visual-language.webp", ...imageProps("assets/visual-language.webp"), alt: "Technical visual language showing architecture, code, and interface references", loading: "lazy", decoding: "async" }), h("p", null, "One consistent visual language across architecture diagrams, code, and interface, so each project is easy to follow and to hand over.")),
   );
 }
 
-function FaqSection() {
-  const faqs = [
-    ["How long does a typical software project take?", "Most focused builds take 4 to 10 weeks, depending on scope, integrations, content readiness, and review speed. Larger platforms are planned in phases."],
-    ["Can you work with our existing codebase?", "Yes. We usually begin with a technical audit, then define the safest path for fixes, new features, modernization, or handover."],
-    ["Do you provide design as well as development?", "Yes. We can create product UX, interface design, component systems, and production implementation in one delivery workflow."],
-    ["What happens after launch?", "We can stay involved for monitoring, improvements, security updates, performance tuning, documentation, and support retainers."],
-    ["How does pricing work?", "We quote in writing before work starts: scope, fees, applicable taxes such as GST, the payment schedule, and any third-party costs like cloud hosting or licences. Extra work is agreed in writing before it begins. This website never takes payments. Cancellations and refunds are explained in our Refund Policy."],
-    ["Can you build automation and AI features?", "Yes. We build practical automation around real operations, including internal tools, workflow bots, AI-assisted review, reporting, and data pipelines."],
-  ];
+const faqs = [
+  ["How long does a typical software project take?", "Most focused builds take 4 to 10 weeks, depending on scope, integrations, content readiness, and review speed. Larger platforms are planned in phases."],
+  ["Can you work with our existing codebase?", "Yes. We usually begin with a technical audit, then define the safest path for fixes, new features, modernization, or handover."],
+  ["Do you provide design as well as development?", "Yes. We can create product UX, interface design, component systems, and production implementation in one delivery workflow."],
+  ["What happens after launch?", "We can stay involved for monitoring, improvements, security updates, performance tuning, documentation, and support retainers."],
+  ["How does pricing work?", "We quote in writing before work starts: scope, fees, applicable taxes such as GST, the payment schedule, and any third-party costs like cloud hosting or licences. Extra work is agreed in writing before it begins. This website never takes payments. Cancellations and refunds are explained in our Refund Policy."],
+  ["Can you build automation and AI features?", "Yes. We build practical automation around real operations, including internal tools, workflow bots, AI-assisted review, reporting, and data pipelines."],
+];
 
+function FaqSection() {
   return h(
     "section",
     { className: "section section--light faq", id: "faq", "aria-labelledby": "faq-title" },
-    h("div", { className: "section__head" }, h("p", { className: "eyebrow" }, "FAQ"), h("h2", { id: "faq-title" }, "Common questions before a build starts")),
+    h("div", { className: "section__head" }, h("h2", { id: "faq-title" }, "Common questions before a build starts")),
     h("div", { className: "faq-list" }, faqs.map(([question, answer]) => h("details", { key: question }, h("summary", null, question), h("p", null, answer)))),
   );
 }
@@ -1027,7 +1057,6 @@ function ContactSection() {
     h(
       "div",
       { className: "contact__copy" },
-      h("p", { className: "eyebrow" }, "Contact"),
       h("h2", { id: "contact-title" }, "Build the next version of your business software"),
       h("p", null, "Share what you need to launch, automate with AI, or improve. We will map the technical path and next steps."),
       h("div", { className: "contact-meta" }, h(ContactLinks, null)),
@@ -1116,7 +1145,7 @@ function useSecureSubmit({ collectionKey, buildPayload, buildMailto, successMess
 
     setIsSubmitting(true);
     setEmailDraftUrl("");
-    setFormStatus({ message: "Sending your message...", tone: "neutral" });
+    setFormStatus({ message: "Sending your message…", tone: "neutral" });
 
     try {
       payload = buildPayload(form);
@@ -1224,12 +1253,12 @@ function FormStatus({ formStatus, emailDraftUrl }) {
 function SecurityOptIn() {
   return h(
     "div",
-    { className: "field" },
+    { className: "field field--optin" },
     h(
       "label",
       { className: "form-check" },
       h("input", { type: "checkbox", name: "security" }),
-      h("span", null, "Allow Google reCAPTCHA spam protection so this form can send. It loads scripts from Google and may set a cookie. Optional: you can email us instead. ", h("a", { href: "cookie-policy.html", target: "_blank", rel: "noopener" }, "Cookie Policy", h(NewTabNote, null)), "."),
+      h("span", null, "Allow Google reCAPTCHA spam protection (uses a cookie). ", h("a", { href: "/cookie-policy", target: "_blank", rel: "noopener" }, "Cookie Policy", h(NewTabNote, null))),
     ),
   );
 }
@@ -1266,7 +1295,7 @@ function ContactForm() {
     { ref: formRef, className: "contact-form", "data-contact-form": true, noValidate: true, onSubmit: handleSubmit, onChange: clearError, onInput: clearError, "aria-busy": String(isSubmitting) },
     h("p", { className: "form-note" }, "All fields are required."),
     h(Field, { formId, name: "name", label: "Name", error: errors.name, render: (invalid) => h("input", { type: "text", name: "name", autoComplete: "name", maxLength: 80, required: true, ...invalid }) }),
-    h(Field, { formId, name: "email", label: "Email", error: errors.email, render: (invalid) => h("input", { type: "email", name: "email", autoComplete: "email", maxLength: 120, required: true, ...invalid }) }),
+    h(Field, { formId, name: "email", label: "Email", error: errors.email, render: (invalid) => h("input", { type: "email", name: "email", autoComplete: "email", spellCheck: false, maxLength: 120, required: true, ...invalid }) }),
     h(Field, {
       formId,
       name: "project",
@@ -1279,7 +1308,7 @@ function ContactForm() {
       name: "brief",
       label: "Brief",
       error: errors.brief,
-      render: (invalid) => h("textarea", { name: "brief", rows: 5, maxLength: 2000, placeholder: "What are you trying to build or improve? Please do not include passwords or sensitive personal data.", required: true, ...invalid }),
+      render: (invalid) => h("textarea", { name: "brief", autoComplete: "off", rows: 5, maxLength: 2000, placeholder: "Describe what you want to build or improve…", required: true, ...invalid }),
     }),
     h("label", { className: "form-honeypot", "aria-hidden": "true" }, h("span", null, "Company website"), h("input", { type: "text", name: "company_website", autoComplete: "off", tabIndex: -1 })),
     h(Field, {
@@ -1292,13 +1321,13 @@ function ContactForm() {
           "label",
           { className: "form-check" },
           h("input", { type: "checkbox", name: "consent", required: true, ...invalid }),
-          h("span", null, "I am 18 or older, I have read the ", h("a", { href: "privacy-policy.html", target: "_blank", rel: "noopener" }, "Privacy Policy", h(NewTabNote, null)), ", and I agree that ", SITE.brand, " may use these details to reply to my enquiry."),
+          h("span", null, "I am 18 or older, I have read the ", h("a", { href: "/privacy-policy", target: "_blank", rel: "noopener" }, "Privacy Policy", h(NewTabNote, null)), ", and I agree that ", SITE.brand, " may use these details to reply to my enquiry."),
         ),
     }),
     securityConsent ? null : h(SecurityOptIn, null),
     h("button", { className: "button button--primary", type: "submit", disabled: isSubmitting }, isSubmitting ? "Sending Message" : "Send Message"),
     h(FormStatus, { formStatus, emailDraftUrl }),
-    h("p", { className: "form-note" }, "We use your details only to reply. We never sell them or use them for marketing."),
+    h("p", { className: "form-note" }, "Please do not include passwords or sensitive personal data. We use your details only to reply, and never sell them or use them for marketing."),
   );
 }
 
@@ -1318,6 +1347,7 @@ function PrivacyRequestPage() {
     h(
       "div",
       { className: "legal__inner" },
+      h(Breadcrumbs, { items: [["Home", "/"], ["Privacy and data requests"]] }),
       h("p", { className: "eyebrow" }, "Your data"),
       h("h1", { id: "privacy-request-title" }, "Privacy and data requests"),
       h("p", { className: "legal__intro" }, "You can ask us for a copy of the personal data we hold about you, to correct it, to delete it, or to withdraw a consent you gave. Use the form below or email us. Both are treated the same."),
@@ -1326,13 +1356,13 @@ function PrivacyRequestPage() {
         "We aim to respond within 30 days. There is no fee for reasonable requests.",
         "Deleting your data does not affect records we must keep by law, such as tax records for paid projects.",
       ].map((item) => h("li", { key: item }, item))),
-      h("p", null, "Prefer email? Write to ", h("a", { href: `mailto:${SITE_EMAIL}?subject=${encodeURIComponent("Privacy request")}` }, SITE_EMAIL), ". Read how we handle data in our ", h("a", { href: "privacy-policy.html" }, "Privacy Policy"), "."),
+      h("p", null, "Prefer email? Write to ", h("a", { href: `mailto:${SITE_EMAIL}?subject=${encodeURIComponent("Privacy request")}` }, SITE_EMAIL), ". Read how we handle data in our ", h("a", { href: "/privacy-policy" }, "Privacy Policy"), "."),
       h(
         "form",
         { ref: formRef, className: "contact-form contact-form--light", noValidate: true, onSubmit: handleSubmit, onChange: clearError, onInput: clearError, "aria-busy": String(isSubmitting) },
         h("p", { className: "form-note" }, "All fields are required except details."),
         h(Field, { formId, name: "name", label: "Name", error: errors.name, render: (invalid) => h("input", { type: "text", name: "name", autoComplete: "name", maxLength: 80, required: true, ...invalid }) }),
-        h(Field, { formId, name: "email", label: "Email", error: errors.email, render: (invalid) => h("input", { type: "email", name: "email", autoComplete: "email", maxLength: 120, required: true, ...invalid }) }),
+        h(Field, { formId, name: "email", label: "Email", error: errors.email, render: (invalid) => h("input", { type: "email", name: "email", autoComplete: "email", spellCheck: false, maxLength: 120, required: true, ...invalid }) }),
         h(Field, {
           formId,
           name: "requestType",
@@ -1340,11 +1370,41 @@ function PrivacyRequestPage() {
           error: errors.requestType,
           render: (invalid) => h("select", { name: "requestType", required: true, ...invalid }, h("option", { value: "" }, "Select one"), PRIVACY_REQUEST_TYPES.map((option) => h("option", { key: option }, option))),
         }),
-        h("label", null, h("span", null, "Details (optional)"), h("textarea", { name: "details", rows: 4, maxLength: 2000, placeholder: "Anything that helps us find your data, such as the date you contacted us. Please do not include sensitive personal data." })),
+        h("label", null, h("span", null, "Details (optional)"), h("textarea", { name: "details", autoComplete: "off", rows: 4, maxLength: 2000, placeholder: "Anything that helps us find your data, such as the date you contacted us…" })),
         h("label", { className: "form-honeypot", "aria-hidden": "true" }, h("span", null, "Company website"), h("input", { type: "text", name: "company_website", autoComplete: "off", tabIndex: -1 })),
         securityConsent ? null : h(SecurityOptIn, null),
         h("button", { className: "button button--primary", type: "submit", disabled: isSubmitting }, isSubmitting ? "Sending Request" : "Send Request"),
         h(FormStatus, { formStatus, emailDraftUrl }),
+      ),
+    ),
+  );
+}
+
+function Breadcrumbs({ items }) {
+  return h(
+    "nav",
+    { className: "breadcrumbs", "aria-label": "Breadcrumb" },
+    h(
+      "ol",
+      null,
+      items.map(([label, href], index) =>
+        h("li", { key: label }, href && index < items.length - 1 ? h("a", { href }, label) : h("span", { "aria-current": "page" }, label)),
+      ),
+    ),
+  );
+}
+
+// Contextual cross-links: help visitors and search engines move between related pages.
+function RelatedLinks({ groups }) {
+  return h(
+    "section",
+    { className: "related", "aria-label": "Related pages" },
+    groups.map(([heading, links]) =>
+      h(
+        "div",
+        { className: "related__group", key: heading },
+        h("h2", null, heading),
+        h("ul", null, links.map(([title, note, href]) => h("li", { key: href }, h("a", { href }, h("strong", null, title), h("span", null, note))))),
       ),
     ),
   );
@@ -1360,10 +1420,11 @@ function ServiceDetailPage({ service }) {
       h(
         "div",
         { className: "service-detail-hero__content" },
+        h(Breadcrumbs, { items: [["Home", "/"], ["Services", "/#services"], [service.title]] }),
         h("p", { className: "eyebrow" }, service.eyebrow),
         h("h1", null, service.detailTitle),
         h("p", { className: "service-detail-hero__lead" }, service.detailLead),
-        h("div", { className: "service-detail-hero__actions" }, h("a", { className: "button button--primary", href: "index.html#contact" }, service.cta), h("a", { className: "button button--ghost", href: "index.html#services" }, "All Services")),
+        h("div", { className: "service-detail-hero__actions" }, h("a", { className: "button button--primary", href: "/#contact" }, service.cta), h("a", { className: "button button--ghost", href: "/#services" }, "All Services")),
       ),
     ),
     h(
@@ -1387,6 +1448,12 @@ function ServiceDetailPage({ service }) {
         h("div", null, h("h2", null, service.outcomeTitle), h("p", null, service.outcomeText)),
         h("div", { className: "service-detail__outcome-grid" }, service.outcomes.map(([title, text]) => h("div", { key: title }, h("strong", null, title), h("span", null, text)))),
       ),
+      h(RelatedLinks, {
+        groups: [
+          ["Work in this area", casesForService(service.slug).map((study) => [study.title, study.isBuild ? "Working build" : "Concept case study", pagePath(study.file)])],
+          ["Other services", services.filter((other) => other.slug !== service.slug).slice(0, 4).map((other) => [other.title, other.summary, pagePath(other.file)])],
+        ],
+      }),
     ),
   );
 }
@@ -1401,10 +1468,11 @@ function CaseDetailPage({ study }) {
       h(
         "div",
         { className: "case-detail-hero__content" },
+        h(Breadcrumbs, { items: [["Home", "/"], ["Case studies", "/#work"], [study.title.split(":")[0]]] }),
         h("p", { className: "eyebrow" }, study.isBuild ? "Working build" : "Concept case study"),
         h("h1", null, study.title),
         h("p", { className: "case-detail-hero__lead" }, study.detailLead),
-        h("div", { className: "case-detail-hero__actions" }, h("a", { className: "button button--primary", href: "index.html#contact" }, "Build Something Similar"), h("a", { className: "button button--ghost", href: "index.html#work" }, "All Case Studies")),
+        h("div", { className: "case-detail-hero__actions" }, h("a", { className: "button button--primary", href: "/#contact" }, "Build Something Similar"), h("a", { className: "button button--ghost", href: "/#work" }, "All Case Studies")),
       ),
     ),
     h(
@@ -1434,7 +1502,13 @@ function CaseDetailPage({ study }) {
         h("p", null, study.implementationText),
         h("div", { className: "case-detail__stack", "aria-label": `${study.title} technology direction` }, study.stack.map((item) => h("span", { key: item }, item))),
       ),
-      h("div", { className: "case-detail__cta" }, h("div", null, h("h2", null, study.ctaTitle), h("p", null, study.ctaText)), h("a", { className: "button button--primary", href: "index.html#contact" }, "Start a Project")),
+      h("div", { className: "case-detail__cta" }, h("div", null, h("h2", null, study.ctaTitle), h("p", null, study.ctaText)), h("a", { className: "button button--primary", href: "/#contact" }, "Start a Project")),
+      h(RelatedLinks, {
+        groups: [
+          ["Services behind it", servicesForCase(study.slug).map((service) => [service.title, service.summary, pagePath(service.file)])],
+          ["More case studies", caseStudies.filter((other) => other.slug !== study.slug).slice(0, 3).map((other) => [other.title, other.isBuild ? "Working build" : "Concept case study", pagePath(other.file)])],
+        ],
+      }),
     ),
   );
 }
@@ -1458,7 +1532,7 @@ function NotFoundPage() {
     "section",
     { className: "section section--light not-found", "aria-labelledby": "not-found-title" },
     h("div", { className: "section__head" }, h("p", { className: "eyebrow" }, "404"), h("h1", { id: "not-found-title" }, "Page not found"), h("p", null, "The page you opened is not part of the CyphronTech site.")),
-    h("div", { className: "not-found__actions" }, h("a", { className: "button button--primary", href: "index.html#top" }, "Back Home"), h("a", { className: "button button--ghost", href: "index.html#contact" }, "Contact")),
+    h("div", { className: "not-found__actions" }, h("a", { className: "button button--primary", href: "/#top" }, "Back Home"), h("a", { className: "button button--ghost", href: "/#contact" }, "Contact")),
   );
 }
 
@@ -1668,6 +1742,7 @@ function LegalPage({ page }) {
     h(
       "div",
       { className: "legal__inner" },
+      h(Breadcrumbs, { items: [["Home", "/"], [page.title]] }),
       h("p", { className: "eyebrow" }, page.eyebrow || "Legal"),
       h("h1", { id: "legal-title" }, page.title),
       h("p", { className: "legal__meta" }, `Last updated: ${SITE.policiesUpdated}`),
@@ -1740,7 +1815,7 @@ function ConsentBanner() {
       "p",
       null,
       "We use one optional cookie: Google reCAPTCHA, to protect our contact form from spam. No analytics or ad trackers. ",
-      h("a", { href: "cookie-policy.html" }, "Cookie Policy"),
+      h("a", { href: "/cookie-policy" }, "Cookie Policy"),
       consent ? ` Current choice: ${consent.security ? "accepted" : "declined"}.` : "",
     ),
     h(
@@ -1778,7 +1853,7 @@ function Footer() {
         h(
           "ul",
           null,
-          h("li", { key: "contact" }, h("a", { href: "index.html#contact" }, "Contact")),
+          h("li", { key: "contact" }, h("a", { href: "/#contact" }, "Contact")),
           legalLinks.map(([label, href]) => h("li", { key: href }, h("a", { href }, label))),
           h("li", { key: "cookie-settings" }, h("button", { type: "button", className: "footer__link-button", onClick: openConsentSettings }, "Cookie settings")),
         ),
@@ -1838,6 +1913,24 @@ function App() {
   usePageSetup(route);
   useEffect(() => startSmoothScroll(), []);
 
+  // The Contact photo loads when the visitor scrolls near it, so it never competes with the hero.
+  useEffect(() => {
+    const sections = document.querySelectorAll("#contact");
+    const show = (section) => section.classList.add("has-photo");
+
+    if (!("IntersectionObserver" in window)) {
+      sections.forEach(show);
+      return undefined;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach((entry) => entry.isIntersecting && (show(entry.target), observer.unobserve(entry.target))),
+      { rootMargin: "800px 0px" },
+    );
+    sections.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
+  }, []);
+
   let page;
 
   if (route.type === "service") {
@@ -1865,8 +1958,15 @@ function App() {
   );
 }
 
-export { App, currentFile, getRoute, services, caseStudies };
+export { App, currentFile, getRoute, services, caseStudies, faqs };
 
 if (typeof document !== "undefined" && document.getElementById("root")) {
-  createRoot(document.getElementById("root")).render(h(App, null));
+  const rootElement = document.getElementById("root");
+
+  // Reuse the pre-rendered HTML (no flash, no re-created LCP element); fall back to a fresh render.
+  if (rootElement.hasChildNodes()) {
+    hydrateRoot(rootElement, h(App, null));
+  } else {
+    createRoot(rootElement).render(h(App, null));
+  }
 }

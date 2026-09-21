@@ -7,7 +7,7 @@
 // business owner and, ideally, a lawyer confirm them before relying on them
 // (see COMPLIANCE.md).
 
-import { SITE } from "./site-config.mjs";
+import { SITE, pagePath } from "./site-config.mjs";
 
 const detailList = (items) => items.filter(Boolean);
 
@@ -27,13 +27,13 @@ const privacy = {
   file: "privacy-policy.html",
   title: "Privacy Policy",
   description: `How ${SITE.legalName} collects, uses, stores and protects personal data submitted through ${SITE.url}.`,
-  intro: `This policy explains what personal data ${SITE.legalName} ("${SITE.brand}", "we", "us") collects through this website, why we collect it, how long we keep it and what choices you have. We keep it short because we collect very little.`,
+  intro: `This policy explains what personal data ${SITE.legalName} (“${SITE.brand}”, “we”, “us”) collects through this website, why we collect it, how long we keep it and what choices you have. We keep it short because we collect very little.`,
   sections: [
     {
       id: "who-we-are",
       heading: "Who we are",
       body: [
-        `${SITE.legalName} decides why and how your personal data is used (the "data fiduciary" under India's Digital Personal Data Protection Act, 2023, and the "controller" under the GDPR).`,
+        `${SITE.legalName} decides why and how your personal data is used (the “data fiduciary” under India's Digital Personal Data Protection Act, 2023, and the “controller” under the GDPR).`,
         businessDetails,
       ],
     },
@@ -122,7 +122,7 @@ const privacy = {
           "nominate someone to exercise your rights if you cannot (India);",
           "restrict or object to our use of your data, or receive it in a portable format (EU/UK visitors).",
         ],
-        "Use the [privacy request form](privacy-request.html) or email us. We may need to confirm it is really you before acting. We aim to reply within 30 days, and we will not charge a fee for reasonable requests.",
+        "Use the [privacy request form](/privacy-request) or email us. We may need to confirm it is really you before acting. We aim to reply within 30 days, and we will not charge a fee for reasonable requests.",
         `If you are unhappy with our answer, contact our Grievance Officer first. You may also complain to the Data Protection Board of India or, if you are in the EU or UK, to your local data protection authority. ${grievanceLine}`,
       ],
     },
@@ -137,7 +137,7 @@ const privacy = {
       id: "cookies",
       heading: "Cookies and similar technologies",
       body: [
-        "We use one browser storage item that is strictly necessary (your cookie choice) and, only if you allow it, Google reCAPTCHA for spam protection. Details and controls are in our [Cookie Policy](cookie-policy.html). You can change your choice at any time from \"Cookie settings\" in the footer.",
+        "We use one browser storage item that is strictly necessary (your cookie choice) and, only if you allow it, Google reCAPTCHA for spam protection. Details and controls are in our [Cookie Policy](/cookie-policy). You can change your choice at any time from “Cookie settings” in the footer.",
       ],
     },
     {
@@ -165,14 +165,14 @@ const privacy = {
 const terms = {
   file: "terms-of-service.html",
   title: "Terms of Service",
-  description: `The terms that apply when you use ${SITE.url} and enquire about ${SITE.brand} services.`,
+  description: `The terms that apply when you use ${SITE.url} and enquire about ${SITE.brand} services: pricing, payments, IP, liability and governing law.`,
   intro: `These terms apply to your use of this website and to enquiries you send through it. By using the site you agree to them. If you do not agree, please do not use the site. Work we do for you is governed by a separate written proposal or agreement.`,
   sections: [
     {
       id: "about",
       heading: "About us and these terms",
       body: [
-        `This website is operated by ${SITE.legalName} ("${SITE.brand}", "we", "us"). You must be at least 18 and, if you write on behalf of a company, authorised to do so.`,
+        `This website is operated by ${SITE.legalName} (“${SITE.brand}”, “we”, “us”). You must be at least 18 and, if you write on behalf of a company, authorised to do so.`,
         businessDetails,
       ],
     },
@@ -193,7 +193,7 @@ const terms = {
           "Changes to scope are agreed in writing, with an estimate, before we do the extra work.",
           "This website does not take payments and never asks for card or bank details.",
         ],
-        "Refunds and cancellations are covered in our [Refund Policy](refund-policy.html).",
+        "Refunds and cancellations are covered in our [Refund Policy](/refund-policy).",
       ],
     },
     {
@@ -241,7 +241,7 @@ const terms = {
       id: "liability",
       heading: "Disclaimers and liability",
       body: [
-        "The website is provided \"as is\" and we try to keep it accurate and available, but we cannot promise it will be error-free or uninterrupted. To the extent the law allows, we are not liable for indirect or consequential loss arising from your use of the website. Liability for project work is set out in your project agreement. Nothing in these terms limits liability that cannot legally be limited, or your rights as a consumer where they apply.",
+        "The website is provided “as is” and we try to keep it accurate and available, but we cannot promise it will be error-free or uninterrupted. To the extent the law allows, we are not liable for indirect or consequential loss arising from your use of the website. Liability for project work is set out in your project agreement. Nothing in these terms limits liability that cannot legally be limited, or your rights as a consumer where they apply.",
       ],
     },
     {
@@ -255,7 +255,7 @@ const terms = {
       id: "privacy",
       heading: "Privacy and cookies",
       body: [
-        "How we handle personal data is described in our [Privacy Policy](privacy-policy.html) and [Cookie Policy](cookie-policy.html).",
+        "How we handle personal data is described in our [Privacy Policy](/privacy-policy) and [Cookie Policy](/cookie-policy).",
       ],
     },
     {
@@ -283,7 +283,7 @@ const terms = {
 const refund = {
   file: "refund-policy.html",
   title: "Refund Policy",
-  description: `When and how ${SITE.legalName} refunds fees for software development services.`,
+  description: `When and how ${SITE.legalName} refunds fees for software development services: cancelling before and after work starts, defects, support plans and how to ask.`,
   intro: `This policy explains how refunds and cancellations work for services we provide. This website does not take payments; fees are agreed in a written proposal and paid by invoice.`,
   sections: [
     {
@@ -349,7 +349,7 @@ const refund = {
       id: "disputes",
       heading: "If you disagree",
       body: [
-        `Ask for the decision to be reviewed by our Grievance Officer. ${grievanceLine} If it is still unresolved, the governing law and dispute steps in our [Terms of Service](terms-of-service.html) apply.`,
+        `Ask for the decision to be reviewed by our Grievance Officer. ${grievanceLine} If it is still unresolved, the governing law and dispute steps in our [Terms of Service](/terms-of-service) apply.`,
       ],
     },
     {
@@ -363,7 +363,7 @@ const refund = {
 const cookies = {
   file: "cookie-policy.html",
   title: "Cookie Policy",
-  description: `The cookies and browser storage ${SITE.url} uses, and how to control them.`,
+  description: `The cookie choice and optional Google reCAPTCHA cookie ${SITE.url} uses, what each is for, how long it lasts, and how to accept or decline.`,
   intro: "Cookies and similar technologies are small items stored in your browser. This site uses very few. This page lists each one so you can decide.",
   sections: [
     {
@@ -388,7 +388,7 @@ const cookies = {
       body: [
         [
           "When you first visit, a small notice lets you accept or decline the optional item with equal ease.",
-          "Change your mind at any time with \"Cookie settings\" in the footer of every page.",
+          "Change your mind at any time with “Cookie settings” in the footer of every page.",
           "You can also delete cookies and site data in your browser settings.",
         ],
         "If you reject the optional item you can still contact us: tick the optional spam-protection box on a form if you change your mind, use the email draft the form offers, or email or phone us directly. Nothing else on the site depends on it.",
@@ -405,7 +405,7 @@ const cookies = {
       id: "more",
       heading: "More information",
       body: [
-        `See our [Privacy Policy](privacy-policy.html) for how we handle personal data, or contact us at ${SITE.email}.`,
+        `See our [Privacy Policy](/privacy-policy) for how we handle personal data, or contact us at ${SITE.email}.`,
       ],
     },
   ],
@@ -423,7 +423,7 @@ const accessibility = {
       heading: "What we have done",
       body: [
         [
-          "Every page has a \"Skip to content\" link and can be used with a keyboard alone, with a clearly visible focus outline.",
+          "Every page has a “Skip to content” link and can be used with a keyboard alone, with a clearly visible focus outline.",
           "Text and interface colours were checked against WCAG contrast ratios.",
           "Images that carry information have text alternatives; decorative images are hidden from screen readers.",
           "Form fields have visible labels, and errors are shown next to the field and announced to screen readers.",
@@ -464,10 +464,10 @@ const accessibility = {
 export const legalPages = { privacy, terms, refund, cookies, accessibility };
 export const legalByFile = new Map(Object.values(legalPages).map((page) => [page.file, page]));
 export const legalLinks = [
-  ["Privacy", privacy.file],
-  ["Terms", terms.file],
-  ["Refunds", refund.file],
-  ["Cookies", cookies.file],
-  ["Accessibility", accessibility.file],
-  ["Data requests", "privacy-request.html"],
+  ["Privacy", pagePath(privacy.file)],
+  ["Terms", pagePath(terms.file)],
+  ["Refunds", pagePath(refund.file)],
+  ["Cookies", pagePath(cookies.file)],
+  ["Accessibility", pagePath(accessibility.file)],
+  ["Data requests", "/privacy-request"],
 ];

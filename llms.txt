@@ -1,0 +1,33 @@
+# CyphronTech
+
+> CyphronTech (Cyphrontech LLP) is a software development agency that designs and builds web platforms, mobile apps, AI automation, cloud systems, data products and UI/UX design for growing teams.
+
+## Services
+- [Web Platforms](https://cyphrontech.com/web-development): Fast, accessible websites and SaaS portals with resilient front-end architecture and clean content workflows.
+- [Mobile Apps](https://cyphrontech.com/mobile-app-development): Native-feeling cross-platform applications with thoughtful user flows, API integration, and launch-ready QA.
+- [Workflow Automation](https://cyphrontech.com/ai-automation): AI-assisted automation for CRM, finance, support, and internal teams using APIs, bots, and monitored jobs.
+- [Cloud Engineering](https://cyphrontech.com/cloud-engineering): Secure infrastructure, CI/CD pipelines, observability, and cost-aware deployment on modern cloud stacks.
+- [UI/UX Design](https://cyphrontech.com/ui-ux-design): User flows, wireframes, design systems, and polished product interfaces built for clear, intuitive experiences.
+- [Data Products](https://cyphrontech.com/data-products): Dashboards, reporting pipelines, and decision tools that turn fragmented business data into usable insight.
+
+## Case studies
+OrbitCart and FlowDesk are working builds that are not yet live. The other case studies are illustrative concepts. None show client results.
+- [OrbitCart: AI Commerce Operations](https://cyphrontech.com/case-orbitcart): Working build. A wholesale commerce operations product that brings inventory, supplier conversations, fulfillment priorities, and AI reorder recommendations into one mobile-first workflow.
+- [LeaseLens: AI Property Scanner](https://cyphrontech.com/case-leaselens): Concept. A property inspection app concept for guided capture, AI condition notes, and cleaner move-in and move-out reporting for landlords, tenants, and field teams.
+- [FlowDesk: AI Automation Command Center](https://cyphrontech.com/case-flowdesk): Working build. A service operations platform that connects intake, approvals, support routing, billing events, AI triage, and executive reporting into one web command center.
+- [MedSync: AI Patient Engagement Portal](https://cyphrontech.com/case-medsync): Concept. A clinic portal concept for appointments, digital intake, AI-assisted reminders, follow-up workflows, and care team messaging across web and mobile touchpoints.
+- [FinSight: AI Cloud Analytics Dashboard](https://cyphrontech.com/case-finsight): Concept. A finance and leadership dashboard concept that brings revenue, churn, pipeline, support signals, secure data ingestion, and AI-assisted reporting into one board.
+
+## Company and policies
+- [Privacy Policy](https://cyphrontech.com/privacy-policy): How Cyphrontech LLP collects, uses, stores and protects personal data submitted through https://cyphrontech.com.
+- [Terms of Service](https://cyphrontech.com/terms-of-service): The terms that apply when you use https://cyphrontech.com and enquire about CyphronTech services: pricing, payments, IP, liability and governing law.
+- [Refund Policy](https://cyphrontech.com/refund-policy): When and how Cyphrontech LLP refunds fees for software development services: cancelling before and after work starts, defects, support plans and how to ask.
+- [Cookie Policy](https://cyphrontech.com/cookie-policy): The cookie choice and optional Google reCAPTCHA cookie https://cyphrontech.com uses, what each is for, how long it lasts, and how to accept or decline.
+- [Accessibility Statement](https://cyphrontech.com/accessibility): How CyphronTech works to make https://cyphrontech.com usable by everyone, known limitations, and how to report a problem.
+- [Privacy and data requests](https://cyphrontech.com/privacy-request): Ask for a copy, correction or deletion of your data, or withdraw consent.
+
+## Contact
+- Email: cyphrontechllp@gmail.com
+- Phone: +91 82752 57252
+- LinkedIn: https://www.linkedin.com/company/cyphron-tech
+- Website: https://cyphrontech.com/

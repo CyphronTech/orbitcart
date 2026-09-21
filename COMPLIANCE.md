@@ -137,7 +137,7 @@ firebase deploy --only firestore:rules,hosting
   and JSON-LD (Organization and WebSite on the home page, breadcrumbs and Service on inner pages).
 - The home page H1 is now "Custom software, mobile apps, and AI automation".
 - Unknown URLs return a real 404 (`404.html`, `noindex`); the catch-all rewrite was removed.
-- Images converted to WebP (2.9 MB down to 0.45 MB) with width and height set. Inter is self-hosted.
+- Images converted to WebP (2.9 MB down to 0.45 MB) with width and height set. Geist and Geist Mono are self-hosted.
 - "Explore service" and "View Case Study" links carry hidden text naming their target; new-tab links say so to screen readers.
 - Forms show inline, screen-reader-linked errors instead of browser pop-ups.
 - Accessibility statement page and print styles added. "Data Products" now has its own page.
@@ -145,3 +145,9 @@ firebase deploy --only firestore:rules,hosting
   sections, so it needs a proper redesign and contrast re-audit), and removal of carousel auto-rotation
   (kept at the owner's request; disclosed in the accessibility statement).
 - The pages, `sitemap.xml` and `404.html` are generated. Do not edit them by hand; edit `src/` and rebuild.
+
+## 11. Look reverted to main (Tech Stack, FAQ, Contact, Footer kept)
+
+- The visual redesign, light/dark theme and its switch were removed. The site is back to its original look, apart from the four kept sections. The whole upgraded design is preserved on branch `ui-upgrade` (commit `3f0c83d`).
+- Kept unchanged: consent notice, forms and legal pages, clean URLs, breadcrumbs and related links, pre-rendering, `llms.txt`, sitemap, tests and performance work.
+- axe-core: 0 violations on all 18 pages. The `cyphron_theme` storage item no longer exists, so the Cookie Policy lists only the cookie-choice item and reCAPTCHA.

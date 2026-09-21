@@ -12,7 +12,13 @@
       "package.json",
       "package-lock.json",
       "scripts/**",
-      ".build/**"
+      ".build/**",
+      "tests/**",
+      "playwright.config.js",
+      "test-results/**",
+      "playwright-report/**",
+      ".agents/**",
+      "skills-lock.json"
     ],
     "headers": [
       {
@@ -41,6 +47,10 @@
           {
             "key": "Permissions-Policy",
             "value": "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()"
+          },
+          {
+            "key": "Cross-Origin-Opener-Policy",
+            "value": "same-origin"
           }
         ]
       },
@@ -53,7 +63,9 @@
           }
         ]
       }
-    ]
+    ],
+    "cleanUrls": true,
+    "trailingSlash": false
   },
   "firestore": {
     "rules": "firestore.rules"
