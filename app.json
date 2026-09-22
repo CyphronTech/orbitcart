@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "OrbitCard",
-    "slug": "orbitcard",
-    "scheme": "orbitcard",
+    "name": "OrbitCart",
+    "slug": "orbitcart",
+    "scheme": "orbitcart",
     "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -14,14 +14,14 @@
     },
     "assetBundlePatterns": ["**/*"],
     "android": {
-      "package": "com.cyphrontech.orbitcard",
+      "package": "com.cyphrontech.orbitcart",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0B1F2B"
       }
     },
     "ios": {
-      "bundleIdentifier": "com.cyphrontech.orbitcard"
+      "bundleIdentifier": "com.cyphrontech.orbitcart"
     }
   }
 }

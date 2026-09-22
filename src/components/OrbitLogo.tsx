@@ -17,7 +17,7 @@ export function OrbitLogo({ compact = false, showWordmark = true }: OrbitLogoPro
       </View>
       {showWordmark ? (
         <View>
-          <Text style={[styles.wordmark, compact && styles.wordmarkCompact]}>OrbitCard</Text>
+          <Text style={[styles.wordmark, compact && styles.wordmarkCompact]}>OrbitCart</Text>
           {!compact ? <Text style={styles.tagline}>Demand decisions, not dashboards</Text> : null}
         </View>
       ) : null}

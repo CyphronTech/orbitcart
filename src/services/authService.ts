@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const AUTH_SESSION_KEY = "orbitcard.auth.session";
-const REGISTERED_ACCOUNTS_KEY = "orbitcard.auth.registered";
+const AUTH_SESSION_KEY = "orbitcart.auth.session";
+const REGISTERED_ACCOUNTS_KEY = "orbitcart.auth.registered";
 
 const DEMO_ACCOUNT = {
   email: "maya@nrwholesale.co",

@@ -1,6 +1,6 @@
-# OrbitCard
+# OrbitCart
 
-OrbitCard is a B2B SaaS mobile app for wholesale distributors. It focuses on reorder priorities, order-risk visibility, supplier follow-up, and manager approval before purchase orders are created. This is CyphronTech's OrbitCard case study build.
+OrbitCart is a B2B SaaS mobile app for wholesale distributors. It focuses on reorder priorities, order-risk visibility, supplier follow-up, and manager approval before purchase orders are created. This is CyphronTech's OrbitCart case study build.
 
 ## Stack
 

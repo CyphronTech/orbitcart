@@ -23,12 +23,12 @@ import {
 import { colors, spacing, type, weight } from "./src/theme/theme";
 import type { ActivityLog, AppTab, BusinessReport, Order, Product, PurchaseOrder, WorkspaceSetup } from "./src/types/domain";
 
-const STOCK_STORAGE_KEY = "orbitcard.stock.items";
-const REPORTS_STORAGE_KEY = "orbitcard.reports.items";
-const PO_STORAGE_KEY = "orbitcard.purchase-orders.items";
-const ACTIVITY_STORAGE_KEY = "orbitcard.activity.items";
-const SETUP_STORAGE_KEY = "orbitcard.workspace.setup";
-const ORDERS_STORAGE_KEY = "orbitcard.orders.items";
+const STOCK_STORAGE_KEY = "orbitcart.stock.items";
+const REPORTS_STORAGE_KEY = "orbitcart.reports.items";
+const PO_STORAGE_KEY = "orbitcart.purchase-orders.items";
+const ACTIVITY_STORAGE_KEY = "orbitcart.activity.items";
+const SETUP_STORAGE_KEY = "orbitcart.workspace.setup";
+const ORDERS_STORAGE_KEY = "orbitcart.orders.items";
 
 const tabs: Array<{ key: AppTab; label: string }> = [
   { key: "today", label: "Today" },
@@ -238,7 +238,7 @@ export default function App() {
       <SafeAreaProvider>
         <SafeAreaView edges={["top", "right", "bottom", "left"]} style={styles.loadingScreen}>
           <ActivityIndicator color={colors.green} />
-          <Text style={styles.loadingText}>Checking OrbitCard session...</Text>
+          <Text style={styles.loadingText}>Checking OrbitCart session...</Text>
         </SafeAreaView>
       </SafeAreaProvider>
     );

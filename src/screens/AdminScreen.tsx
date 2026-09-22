@@ -14,7 +14,7 @@ export function AdminScreen({ activity, onAdminAction, setup }: AdminScreenProps
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <Text style={styles.title}>Admin</Text>
-      <Text style={styles.subtitle}>Controls that make OrbitCard feel like a real B2B workspace.</Text>
+      <Text style={styles.subtitle}>Controls that make OrbitCart feel like a real B2B workspace.</Text>
 
       <Card style={styles.identityCard}>
         <Text style={styles.kicker}>Workspace</Text>
