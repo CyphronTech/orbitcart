@@ -1,0 +1,27 @@
+{
+  "expo": {
+    "name": "OrbitCard",
+    "slug": "orbitcard",
+    "scheme": "orbitcard",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FFFFFF"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "android": {
+      "package": "com.cyphrontech.orbitcard",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0B1F2B"
+      }
+    },
+    "ios": {
+      "bundleIdentifier": "com.cyphrontech.orbitcard"
+    }
+  }
+}
