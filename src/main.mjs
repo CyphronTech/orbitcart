@@ -42,6 +42,10 @@ const IMAGE_SIZES = {
     1100,
     825
   ],
+  "assets/case-proofly.webp": [
+    1100,
+    825
+  ],
   "assets/digital-mockup.webp": [
     590,
     220
@@ -284,6 +288,48 @@ const services = [
 
 const caseStudies = [
   {
+    slug: "proofly",
+    file: "case-proofly.html",
+    title: "Proofly: AI Chargeback Dispute Copilot",
+    image: "assets/case-proofly.webp",
+    alt: "Proofly chargeback dispute review screen showing an AI recommendation and policy citation",
+    teaser: "Proofly reads a merchant's order records and refund policy, then recommends contesting or accepting an \"item not received\" chargeback with plain-English reasoning and citations. A self-hosted Windows app that checks the AI against the merchant's own data before showing a recommendation.",
+    isBuild: true,
+    metrics: [["Status", "Working build"], ["Platform", "Windows"], ["AI layer", "Dispute review"]],
+    detailLead: "A self-hosted dispute copilot that reads a merchant's order database and policy documents, then recommends contesting or accepting a chargeback with plain-English reasoning, policy citations, and a downloadable evidence report.",
+    stats: [["Status", "Working build"], ["Platform", "Windows"], ["AI Layer", "Dispute review"], ["Focus", "Chargebacks"]],
+    overviewTitle: "Turning scattered order evidence into a reviewable recommendation.",
+    overviewText: [
+      "Proofly was built around a narrow, high-stakes task: a merchant has around 48 hours to answer an \"item not received\" chargeback, and the proof is spread across the order database, a policy PDF, and staff memory. The app reads an order by ID, pulls the matching policy clause, and asks an AI model to weigh the two.",
+      "A deterministic safety net cross-checks the AI's recommendation against the merchant's own records before anything is shown, and routes the case to manual review instead of trusting a confident but wrong answer.",
+    ],
+    focus: [
+      ["Challenge", "Evidence scattered across systems", "Order, payment, fulfillment, refund, and policy detail live in different places, and disputes have a hard reply deadline."],
+      ["Solution", "Read-only AI review with a safety net", "A read-only, allowlisted connector reads the order; the AI reviews it against the cited policy clause; a deterministic check overrides the AI if it contradicts the merchant's own records."],
+      ["Intended outcome", "Fewer disputes lost to guesswork", "Merchants get a plain-English recommendation and a downloadable evidence report instead of digging through tables by hand."],
+    ],
+    scopeTitle: "A dispute workflow built to be checked, not just trusted.",
+    scope: [
+      ["01", "Case review", "Order ID in, plain-English summary out: what was ordered, delivery status, refund history, and the AI's contest/accept recommendation with a confidence score."],
+      ["02", "Policy citations", "The AI quotes the merchant's actual refund or shipping policy, and every quoted clause is verified against the document text before it is shown."],
+      ["03", "Manual review queue", "Cases the safety net disagrees with, or the AI is unsure about, are flagged for a human to decide instead of auto-approved."],
+      ["04", "Evidence report", "An approved case exports as a PDF, with a fingerprint hash proving it was not edited after approval, ready to send to the payment processor."],
+    ],
+    aiTitle: "AI that is checked against the merchant's own records.",
+    aiText: "The AI layer reads order, payment, fulfillment, and refund evidence alongside the cited policy clause and recommends contest or accept. A deterministic rule layer then re-checks that recommendation against facts the connector itself read, and overrides the AI when the two disagree.",
+    aiItems: [
+      ["Evidence review", "Weighs delivery status, refund history, and return requests against the matching policy clause."],
+      ["Cited, verified quotes", "Every policy quote is checked against the source document before it reaches the merchant."],
+      ["Safety-net override", "A refund already issued or an open return request routes the case to manual review, no matter what the AI recommends."],
+      ["Bring-your-own model", "Works with Anthropic, OpenAI-compatible APIs, or a local model, with the provider key encrypted at rest."],
+    ],
+    implementationTitle: "Built to run on the merchant's own machine.",
+    implementationText: "The product direction covers a read-only, allowlisted database connector with schema-validated queries, a setup wizard that maps a merchant's own tables and columns, keyword-based policy retrieval with no vector database required, a full audit trail, and packaging as a single Windows installer with an embedded database.",
+    stack: ["Spring Boot", "React", "TypeScript", "PostgreSQL", "Anthropic", "Windows"],
+    ctaTitle: "Need AI that's checked against your own data?",
+    ctaText: "We can design read-only, audited AI review workflows for the high-stakes decisions your team makes under a deadline.",
+  },
+  {
     slug: "orbitcart",
     file: "case-orbitcart.html",
     title: "OrbitCart: AI Commerce Operations",
@@ -494,6 +540,7 @@ const caseStudies = [
 
 // Which case studies used which services. Drives the "related" links on service and case pages.
 const caseServices = {
+  proofly: ["web", "ai", "data"],
   orbitcart: ["mobile", "ai", "cloud"],
   leaselens: ["mobile", "ai"],
   flowdesk: ["web", "ai"],

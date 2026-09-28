@@ -12,6 +12,7 @@
 
 ## Case studies
 OrbitCart and FlowDesk are working builds that are not yet live. The other case studies are illustrative concepts. None show client results.
+- [Proofly: AI Chargeback Dispute Copilot](https://cyphrontech.com/case-proofly): Working build. A self-hosted dispute copilot that reads a merchant's order database and policy documents, then recommends contesting or accepting a chargeback with plain-English reasoning, policy citations, and a downloadable evidence report.
 - [OrbitCart: AI Commerce Operations](https://cyphrontech.com/case-orbitcart): Working build. A wholesale commerce operations product that brings inventory, supplier conversations, fulfillment priorities, and AI reorder recommendations into one mobile-first workflow.
 - [LeaseLens: AI Property Scanner](https://cyphrontech.com/case-leaselens): Concept. A property inspection app concept for guided capture, AI condition notes, and cleaner move-in and move-out reporting for landlords, tenants, and field teams.
 - [FlowDesk: AI Automation Command Center](https://cyphrontech.com/case-flowdesk): Working build. A service operations platform that connects intake, approvals, support routing, billing events, AI triage, and executive reporting into one web command center.
