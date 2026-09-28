@@ -1398,6 +1398,10 @@ textarea {
   background-size: cover;
 }
 
+.case-detail-hero--proofly {
+  --case-hero-image: url("assets/case-proofly.webp");
+}
+
 .case-detail-hero--orbitcart {
   --case-hero-image: url("assets/case-orbitcart.webp");
 }

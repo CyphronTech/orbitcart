@@ -9,6 +9,7 @@ const PAGES = [
   "/cloud-engineering",
   "/ui-ux-design",
   "/data-products",
+  "/case-proofly",
   "/case-orbitcart",
   "/case-leaselens",
   "/case-flowdesk",
